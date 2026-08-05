@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0a0a0a;
+  color: #ffffff;
+  overflow: hidden;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+/* Keep the Mapbox attribution/controls legible on the dark theme. */
+.mapboxgl-ctrl-attrib {
+  font-size: 10px;
+}
+
+/* Dark, glassy station popups. */
+.hyrox-popup .mapboxgl-popup-content {
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  padding: 10px 12px;
+}
+
+/* Popup tip inherits the dark background for every anchor orientation. */
+.hyrox-popup .mapboxgl-popup-tip {
+  border-top-color: rgba(10, 10, 10, 0.92);
+  border-bottom-color: rgba(10, 10, 10, 0.92);
+  border-left-color: rgba(10, 10, 10, 0.92);
+  border-right-color: rgba(10, 10, 10, 0.92);
+}
