@@ -12,11 +12,15 @@ event zone.
 
 - 🗺️ Full-screen Mapbox GL canvas (`100vw` × `100vh`) on the `dark-v11` style
 - ⛰️ 3D terrain (`mapbox-dem`) revealing the venue's elevation
+- 🏙️ Surrounding city rendered as 3D `fill-extrusion` buildings for real isometric depth
+- 📍 Interactive station markers (Finish Line, Cardio, Sleds, Strength) with click-to-open popups
 - 🎛️ Glass-morphism sidebar with three independent layer toggles:
   - 🏃 **1km Running Loop** — dashed yellow `LineString` circling the building
   - 🏟️ **Indoor Arena** — dark-red 3D extruded polygon (Cardio & Finish Line)
   - ⛺ **Power Village** — green 3D extruded polygon (turf / heavy weights)
 - 🎨 HYROX brand palette (Black, Yellow `#fbc02d`, Red `#e74c3c`)
+
+> Station markers are tied to their parent zone's toggle — hiding a zone hides its stations too.
 
 ## Tech stack
 
@@ -84,7 +88,9 @@ paint definitions — so the components stay focused on rendering.
 ## Deploying to Vercel
 
 1. Push this repo to GitHub.
-2. Import it in Vercel — the framework is auto-detected as Next.js.
+2. Import it in Vercel. A `vercel.json` pins `"framework": "nextjs"` so Vercel always uses the
+   Next.js preset (guards against the *"No Output Directory named 'public' found"* error that
+   occurs if the preset falls back to a static "Other" build).
 3. Add the `NEXT_PUBLIC_MAPBOX_TOKEN` environment variable in the Vercel project settings.
 4. Deploy.
 
