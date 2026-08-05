@@ -4,31 +4,25 @@ import type { LayerProps } from "react-map-gl/mapbox";
 /**
  * HYROX San Marino — map data & style config.
  *
- * Everything the map needs (viewport, terrain, GeoJSON for the three event
- * zones, and the Mapbox layer paint definitions) lives here so the React
- * components stay focused on rendering and interaction.
- *
- * Geometry is aligned to the real Multieventi Sport Domus complex in
- * Serravalle, San Marino, using OpenStreetMap data:
- *  - The running loop traces the real Via Rancaglia along the south of the site.
- *  - The indoor arena sits on the Multieventi hall, attached to the north edge
- *    of the Piscina Olimpica di Serravalle.
- *  - The power village covers the flat stadium parking to the south/south-east.
- * The stadium (grandstands to the east) is deliberately excluded from the loop.
+ * The three event-zone geometries below are the EXACT, manually-traced
+ * boundaries provided for the Multieventi Sport Domus, Serravalle (San Marino):
+ *   - Feature 1 (Polygon)    → Indoor Arena   (red fill-extrusion)
+ *   - Feature 2 (Polygon)    → Power Village  (green fill-extrusion)
+ *   - Feature 3 (LineString) → Running Loop   (yellow dashed line)
+ * Coordinates are used verbatim — no mock data, no generated offsets.
  */
 
-// --- Venue & viewport ------------------------------------------------------
+// --- Viewport (centered on the Indoor Arena polygon centroid) --------------
 
-/** Roof of the Multieventi Sport Domus. */
 export const VENUE = {
-  longitude: 12.4761,
-  latitude: 43.9725,
+  longitude: 12.4754368,
+  latitude: 43.9708936,
 } as const;
 
 export const INITIAL_VIEW_STATE = {
   longitude: VENUE.longitude,
   latitude: VENUE.latitude,
-  zoom: 17.3,
+  zoom: 17.5,
   pitch: 60,
   bearing: -20,
 } as const;
@@ -74,96 +68,78 @@ export const HYROX = {
   black: "#0a0a0a",
 } as const;
 
-// --- Zone 1: 1km Running Loop (LineString) ---------------------------------
-// Traces the real Via Rancaglia along the south of the complex, then wraps the
-// north / east / west perimeter of the arena + parking. Stays west of the
-// football stadium. Total length ≈ 1.1 km.
-
-const RUNNING_LOOP_COORDS: [number, number][] = [
-  [12.4747, 43.9729], // NW corner
-  [12.4772, 43.9729], // NE corner
-  [12.4776, 43.9713], // E side (kept west of the stadium)
-  [12.47778, 43.97046], // join Via Rancaglia (SE)
-  // --- real Via Rancaglia points, running east → west along the south ---
-  [12.47765, 43.97041],
-  [12.47744, 43.97035],
-  [12.47686, 43.97023],
-  [12.47657, 43.97013],
-  [12.47635, 43.97004],
-  [12.47543, 43.96967],
-  [12.47528, 43.9696],
-  [12.47517, 43.96954],
-  [12.47508, 43.9695],
-  // --- close the loop up the west side ---
-  [12.47488, 43.96985], // SW
-  [12.4747, 43.9712], // W side
-  [12.4747, 43.9729], // back to start
-];
-
-export const runningLoopGeoJSON: FeatureCollection<LineString> = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      properties: { name: "1km Running Loop", surface: "Via Rancaglia" },
-      geometry: { type: "LineString", coordinates: RUNNING_LOOP_COORDS },
-    },
-  ],
-};
-
-// --- Zone 2: Indoor Arena (extruded Polygon) -------------------------------
-// The Multieventi hall — Cardio Stations + Finish Line. Rotated ~20° to match
-// the complex orientation, attached to the north edge of the Piscina Olimpica.
-
-const ARENA_COORDS: [number, number][][] = [
-  [
-    [12.47542, 43.97178],
-    [12.47654, 43.97207],
-    [12.47628, 43.97258],
-    [12.47516, 43.97229],
-    [12.47542, 43.97178],
-  ],
-];
+// --- Zone 1: Indoor Arena (exact traced Polygon) ---------------------------
 
 export const indoorArenaGeoJSON: FeatureCollection<Polygon> = {
   type: "FeatureCollection",
   features: [
     {
       type: "Feature",
-      properties: {
-        name: "Indoor Arena — Cardio & Finish",
-        height: 18,
-        base: 0,
+      properties: { name: "Indoor Arena — Cardio & Finish" },
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [12.4747636, 43.9711966],
+            [12.4752517, 43.9703357],
+            [12.4761154, 43.9705866],
+            [12.4756165, 43.9714553],
+            [12.4747636, 43.9711966],
+          ],
+        ],
       },
-      geometry: { type: "Polygon", coordinates: ARENA_COORDS },
     },
   ],
 };
 
-// --- Zone 3: Outdoor Power Village (extruded Polygon) ----------------------
-// Flat stadium parking south / south-east of the Multieventi — sleds & lifting.
-
-const VILLAGE_COORDS: [number, number][][] = [
-  [
-    [12.47547, 43.96999],
-    [12.47676, 43.97033],
-    [12.47653, 43.97081],
-    [12.47524, 43.97047],
-    [12.47547, 43.96999],
-  ],
-];
+// --- Zone 2: Power Village (exact traced Polygon) --------------------------
 
 export const powerVillageGeoJSON: FeatureCollection<Polygon> = {
   type: "FeatureCollection",
   features: [
     {
       type: "Feature",
-      properties: {
-        name: "Power Village — Heavy Weights",
-        height: 4,
-        base: 0,
+      properties: { name: "Power Village — Heavy Weights" },
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [12.4753417, 43.9701404],
+            [12.4755655, 43.9698254],
+            [12.4765602, 43.9701511],
+            [12.4763762, 43.9704662],
+            [12.4762519, 43.9704339],
+            [12.4753417, 43.9701404],
+          ],
+        ],
       },
-      geometry: { type: "Polygon", coordinates: VILLAGE_COORDS },
+    },
+  ],
+};
+
+// --- Zone 3: Running Loop (exact traced LineString) ------------------------
+
+export const runningLoopGeoJSON: FeatureCollection<LineString> = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      properties: { name: "1km Running Loop" },
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [12.4763315, 43.9700473],
+          [12.4753715, 43.9696285],
+          [12.4752671, 43.970212],
+          [12.4761972, 43.9705127],
+          [12.4756114, 43.9714844],
+          [12.4746811, 43.9711906],
+          [12.4752128, 43.9702124],
+          [12.4753304, 43.9696268],
+          [12.47629, 43.9700645],
+          [12.47629, 43.9700645],
+        ],
+      },
     },
   ],
 };
@@ -190,8 +166,8 @@ export const indoorArenaLayer: LayerProps = {
   type: "fill-extrusion",
   paint: {
     "fill-extrusion-color": HYROX.darkRed,
-    "fill-extrusion-height": ["get", "height"],
-    "fill-extrusion-base": ["get", "base"],
+    "fill-extrusion-height": 18,
+    "fill-extrusion-base": 0,
     "fill-extrusion-opacity": 0.85,
   },
 };
@@ -201,8 +177,8 @@ export const powerVillageLayer: LayerProps = {
   type: "fill-extrusion",
   paint: {
     "fill-extrusion-color": HYROX.turf,
-    "fill-extrusion-height": ["get", "height"],
-    "fill-extrusion-base": ["get", "base"],
+    "fill-extrusion-height": 4,
+    "fill-extrusion-base": 0,
     "fill-extrusion-opacity": 0.8,
   },
 };
@@ -228,6 +204,8 @@ export const buildingsLayer: LayerProps = {
 };
 
 // --- Stations (markers + popups) -------------------------------------------
+// Removed the previously-guessed station coordinates. Provide real station
+// positions and they can be added back here precisely.
 
 export type StationCategory = "finish" | "cardio" | "sled" | "strength";
 
@@ -241,71 +219,4 @@ export interface Station {
   coordinates: [number, number];
 }
 
-export const STATIONS: Station[] = [
-  // Indoor Arena (Multieventi hall)
-  {
-    id: "finish",
-    name: "🏁 Finish Line",
-    description: "The final push. Timing gate and podium at the heart of the arena.",
-    category: "finish",
-    zone: "arena",
-    coordinates: [12.47585, 43.97211],
-  },
-  {
-    id: "skierg",
-    name: "SkiErg",
-    description: "1,000 m ski. Opening cardio station on the parquet.",
-    category: "cardio",
-    zone: "arena",
-    coordinates: [12.47558, 43.97223],
-  },
-  {
-    id: "row",
-    name: "RowErg",
-    description: "1,000 m row. Second indoor cardio block before the finish.",
-    category: "cardio",
-    zone: "arena",
-    coordinates: [12.47612, 43.97223],
-  },
-  // Outdoor Power Village (stadium parking)
-  {
-    id: "sled-push",
-    name: "Sled Push",
-    description: "50 m heavy sled push on the artificial turf.",
-    category: "sled",
-    zone: "village",
-    coordinates: [12.47563, 43.97044],
-  },
-  {
-    id: "sled-pull",
-    name: "Sled Pull",
-    description: "50 m sled pull. Grip and posterior-chain grinder.",
-    category: "sled",
-    zone: "village",
-    coordinates: [12.47637, 43.97044],
-  },
-  {
-    id: "farmers",
-    name: "Farmers Carry",
-    description: "200 m loaded carry through the power village.",
-    category: "strength",
-    zone: "village",
-    coordinates: [12.47563, 43.97027],
-  },
-  {
-    id: "lunges",
-    name: "Sandbag Lunges",
-    description: "100 m walking lunges under a loaded sandbag.",
-    category: "strength",
-    zone: "village",
-    coordinates: [12.47637, 43.97027],
-  },
-  {
-    id: "wallballs",
-    name: "Wall Balls",
-    description: "100 reps to close the race before the run back to the finish.",
-    category: "strength",
-    zone: "village",
-    coordinates: [12.476, 43.97036],
-  },
-];
+export const STATIONS: Station[] = [];
