@@ -212,3 +212,106 @@ export const powerVillageLayer: LayerProps = {
     "fill-extrusion-opacity": 0.8,
   },
 };
+
+/**
+ * Surrounding city buildings in 3D. Pulls from the `composite` vector source
+ * bundled with the dark-v11 style and extrudes each building by its `height`
+ * property — adds real isometric depth around the venue.
+ */
+export const buildingsLayer: LayerProps = {
+  id: "3d-buildings",
+  source: "composite",
+  "source-layer": "building",
+  filter: ["==", "extrude", "true"],
+  type: "fill-extrusion",
+  minzoom: 14,
+  paint: {
+    "fill-extrusion-color": "#2b2b30",
+    "fill-extrusion-height": ["get", "height"],
+    "fill-extrusion-base": ["get", "min_height"],
+    "fill-extrusion-opacity": 0.9,
+  },
+};
+
+// --- Stations (markers + popups) -------------------------------------------
+
+export type StationCategory = "finish" | "cardio" | "sled" | "strength";
+
+export interface Station {
+  id: string;
+  name: string;
+  description: string;
+  category: StationCategory;
+  /** Which zone toggle controls this marker's visibility. */
+  zone: "arena" | "village";
+  coordinates: LngLat;
+}
+
+export const STATIONS: Station[] = [
+  // Indoor Arena
+  {
+    id: "finish",
+    name: "🏁 Finish Line",
+    description: "The final push. Timing gate and podium at the heart of the arena.",
+    category: "finish",
+    zone: "arena",
+    coordinates: offset(0, -18),
+  },
+  {
+    id: "skierg",
+    name: "SkiErg",
+    description: "1,000 m ski. Opening cardio station on the parquet.",
+    category: "cardio",
+    zone: "arena",
+    coordinates: offset(-18, 8),
+  },
+  {
+    id: "row",
+    name: "RowErg",
+    description: "1,000 m row. Second indoor cardio block before the finish.",
+    category: "cardio",
+    zone: "arena",
+    coordinates: offset(18, 8),
+  },
+  // Outdoor Power Village
+  {
+    id: "sled-push",
+    name: "Sled Push",
+    description: "50 m heavy sled push on the artificial turf.",
+    category: "sled",
+    zone: "village",
+    coordinates: offset(70, 5),
+  },
+  {
+    id: "sled-pull",
+    name: "Sled Pull",
+    description: "50 m sled pull. Grip and posterior-chain grinder.",
+    category: "sled",
+    zone: "village",
+    coordinates: offset(110, 5),
+  },
+  {
+    id: "farmers",
+    name: "Farmers Carry",
+    description: "200 m loaded carry through the power village.",
+    category: "strength",
+    zone: "village",
+    coordinates: offset(70, -25),
+  },
+  {
+    id: "lunges",
+    name: "Sandbag Lunges",
+    description: "100 m walking lunges under a loaded sandbag.",
+    category: "strength",
+    zone: "village",
+    coordinates: offset(110, -25),
+  },
+  {
+    id: "wallballs",
+    name: "Wall Balls",
+    description: "100 reps to close the race before the run back to the finish.",
+    category: "strength",
+    zone: "village",
+    coordinates: offset(90, -10),
+  },
+];
