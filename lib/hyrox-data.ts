@@ -168,7 +168,7 @@ export const indoorArenaLayer: LayerProps = {
     "fill-extrusion-color": HYROX.darkRed,
     "fill-extrusion-height": 18,
     "fill-extrusion-base": 0,
-    "fill-extrusion-opacity": 0.85,
+    "fill-extrusion-opacity": 0.65,
   },
 };
 
@@ -179,7 +179,7 @@ export const powerVillageLayer: LayerProps = {
     "fill-extrusion-color": HYROX.turf,
     "fill-extrusion-height": 4,
     "fill-extrusion-base": 0,
-    "fill-extrusion-opacity": 0.8,
+    "fill-extrusion-opacity": 0.65,
   },
 };
 
@@ -217,22 +217,25 @@ export interface Station {
   lat: number;
   type: StationType;
   icon: StationIcon;
-  /** Short description shown in the click popup. */
-  detail: string;
+  /** Popup detail — distance/reps and surface. */
+  distance?: string;
+  surface?: string;
+  /** Free-form note used for Start / Finish (no distance/surface). */
+  note?: string;
 }
 
 export const STATIONS: Station[] = [
   // OUTDOOR (Green polygon) — evenly spaced along the center axis (race lanes)
-  { id: "start", name: "START", lng: 12.47545, lat: 43.96995, type: "outdoor", icon: "Play", detail: "Race start. Each station is separated by a 1 km run (8 km total)." },
-  { id: "st2", name: "2. Sled Push", lng: 12.47565, lat: 43.97002, type: "outdoor", icon: "Dumbbell", detail: "50 m heavy sled push across the turf." },
-  { id: "st3", name: "3. Sled Pull", lng: 12.47585, lat: 43.9701, type: "outdoor", icon: "Dumbbell", detail: "50 m sled pull. Grip and posterior-chain grinder." },
-  { id: "st4", name: "4. Burpees", lng: 12.47605, lat: 43.97018, type: "outdoor", icon: "Activity", detail: "80 m of burpee broad jumps." },
-  { id: "st6", name: "6. Farmers Carry", lng: 12.47625, lat: 43.97026, type: "outdoor", icon: "Dumbbell", detail: "200 m loaded carry through the power village." },
-  { id: "st7", name: "7. Sandbags", lng: 12.47645, lat: 43.97034, type: "outdoor", icon: "Dumbbell", detail: "100 m of walking sandbag lunges." },
+  { id: "start", name: "START", lng: 12.47545, lat: 43.96995, type: "outdoor", icon: "Play", note: "Race start — 8 × 1 km runs separate the stations (8 km total)." },
+  { id: "st2", name: "2. Sled Push", lng: 12.47565, lat: 43.97002, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
+  { id: "st3", name: "3. Sled Pull", lng: 12.47585, lat: 43.9701, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
+  { id: "st4", name: "4. Burpees", lng: 12.47605, lat: 43.97018, type: "outdoor", icon: "Activity", distance: "80 m broad jumps", surface: "Artificial turf" },
+  { id: "st6", name: "6. Farmers Carry", lng: 12.47625, lat: 43.97026, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt" },
+  { id: "st7", name: "7. Sandbags", lng: 12.47645, lat: 43.97034, type: "outdoor", icon: "Dumbbell", distance: "100 m lunges", surface: "Artificial turf" },
 
   // INDOOR (Red polygon) — spaced for logical entry/exit flow
-  { id: "st1", name: "1. SkiErg", lng: 12.4758, lat: 43.9707, type: "indoor", icon: "Activity", detail: "1,000 m ski. Full-body opener on the SkiErg." },
-  { id: "st5", name: "5. RowErg", lng: 12.4751, lat: 43.971, type: "indoor", icon: "Activity", detail: "1,000 m row on the RowErg." },
-  { id: "st8", name: "8. Wall Balls", lng: 12.4754, lat: 43.9713, type: "indoor", icon: "Target", detail: "100 wall balls to close the race." },
-  { id: "finish", name: "FINISH", lng: 12.4755, lat: 43.9709, type: "indoor", icon: "Flag", detail: "The finish line — timing gate and podium." },
+  { id: "st1", name: "1. SkiErg", lng: 12.4758, lat: 43.9707, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
+  { id: "st5", name: "5. RowErg", lng: 12.4751, lat: 43.971, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
+  { id: "st8", name: "8. Wall Balls", lng: 12.4754, lat: 43.9713, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet" },
+  { id: "finish", name: "FINISH", lng: 12.4755, lat: 43.9709, type: "indoor", icon: "Flag", note: "Finish line — timing gate and podium." },
 ];

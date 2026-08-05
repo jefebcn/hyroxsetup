@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Map, {
   Source,
   Layer,
   Marker,
   Popup,
   NavigationControl,
+  type MapRef,
 } from "react-map-gl/mapbox";
 import {
   Play,
@@ -39,6 +40,7 @@ import {
 } from "@/lib/hyrox-data";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+const RUNNING_LAYER_ID = "running-loop-line";
 
 /** Maps a station's icon name to its Lucide component. */
 const STATION_ICONS: Record<StationIcon, LucideIcon> = {
@@ -49,7 +51,26 @@ const STATION_ICONS: Record<StationIcon, LucideIcon> = {
   Target,
 };
 
+/** Marching-ants dash frames for the animated running loop. */
+const DASH_SEQUENCE: number[][] = [
+  [0, 4, 3],
+  [0.5, 4, 2.5],
+  [1, 4, 2],
+  [1.5, 4, 1.5],
+  [2, 4, 1],
+  [2.5, 4, 0.5],
+  [3, 4, 0],
+  [0, 0.5, 3, 3.5],
+  [0, 1, 3, 3],
+  [0, 1.5, 3, 2.5],
+  [0, 2, 3, 2],
+  [0, 2.5, 3, 1.5],
+  [0, 3, 3, 1],
+  [0, 3.5, 3, 0.5],
+];
+
 export default function MapViewer() {
+  const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayerState>({
     running: true,
     arena: true,
@@ -62,8 +83,34 @@ export default function MapViewer() {
     setLayers((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  // Graceful fallback when the Mapbox token is missing — keeps the app from
-  // crashing and tells the developer exactly what to do.
+  // Animate the running-loop dash so it "flows" like a stream of athletes.
+  useEffect(() => {
+    let raf = 0;
+    let step = -1;
+    const animate = (t: number) => {
+      const map = mapRef.current?.getMap();
+      if (map && map.getLayer(RUNNING_LAYER_ID)) {
+        const next = Math.floor(t / 70) % DASH_SEQUENCE.length;
+        if (next !== step) {
+          step = next;
+          try {
+            map.setPaintProperty(
+              RUNNING_LAYER_ID,
+              "line-dasharray",
+              DASH_SEQUENCE[next],
+            );
+          } catch {
+            /* layer not ready yet */
+          }
+        }
+      }
+      raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Graceful fallback when the Mapbox token is missing.
   if (!MAPBOX_TOKEN) {
     return <MissingTokenScreen />;
   }
@@ -71,6 +118,7 @@ export default function MapViewer() {
   return (
     <div className="relative h-screen w-screen">
       <Map
+        ref={mapRef}
         initialViewState={INITIAL_VIEW_STATE}
         mapStyle={MAP_STYLE}
         mapboxAccessToken={MAPBOX_TOKEN}
@@ -116,7 +164,21 @@ export default function MapViewer() {
         {layers.stations &&
           STATIONS.map((station) => {
             const Icon = STATION_ICONS[station.icon];
+            const terminus = station.id === "start" || station.id === "finish";
             const indoor = station.type === "indoor";
+            const active = selected?.id === station.id;
+
+            const pill = terminus
+              ? "bg-black text-yellow-400 ring-yellow-400/70"
+              : indoor
+                ? "bg-red-600 text-yellow-300 ring-black/30"
+                : "bg-green-600 text-white ring-black/30";
+            const pointer = terminus
+              ? "bg-black"
+              : indoor
+                ? "bg-red-600"
+                : "bg-green-600";
+
             return (
               <Marker
                 key={station.id}
@@ -124,7 +186,6 @@ export default function MapViewer() {
                 latitude={station.lat}
                 anchor="bottom"
                 onClick={(e) => {
-                  // Keep the map's onClick from immediately closing the popup.
                   e.originalEvent.stopPropagation();
                   setSelected(station);
                 }}
@@ -135,21 +196,18 @@ export default function MapViewer() {
                   className="flex cursor-pointer flex-col items-center transition-transform hover:scale-110"
                 >
                   <div
-                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold shadow-lg ring-1 ring-black/30 ${
-                      indoor
-                        ? "bg-red-600 text-yellow-300"
-                        : "bg-green-600 text-white"
-                    } ${selected?.id === station.id ? "ring-2 ring-white" : ""}`}
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-1 text-xs font-bold shadow-lg ring-1 ${pill} ${
+                      active ? "ring-2 ring-white" : ""
+                    } ${terminus ? "uppercase tracking-wide" : ""}`}
                   >
                     <Icon className="h-3.5 w-3.5 shrink-0" />
-                    <span>{station.name}</span>
+                    {/* On mobile show only the icon for numbered stations to
+                        avoid overlap; Start/Finish always show their label. */}
+                    <span className={terminus ? "inline" : "hidden md:inline"}>
+                      {station.name}
+                    </span>
                   </div>
-                  {/* pointer */}
-                  <div
-                    className={`h-2 w-2 -translate-y-1 rotate-45 ${
-                      indoor ? "bg-red-600" : "bg-green-600"
-                    }`}
-                  />
+                  <div className={`h-2 w-2 -translate-y-1 rotate-45 ${pointer}`} />
                 </button>
               </Marker>
             );
@@ -167,7 +225,7 @@ export default function MapViewer() {
             className="hyrox-popup"
           >
             <div className="min-w-[190px] p-1">
-              <div className="mb-1 flex items-center gap-2">
+              <div className="mb-1.5 flex items-center gap-2">
                 <span
                   className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                     selected.type === "indoor"
@@ -179,9 +237,30 @@ export default function MapViewer() {
                 </span>
               </div>
               <h3 className="text-sm font-bold text-white">{selected.name}</h3>
-              <p className="mt-1 text-xs leading-relaxed text-white/70">
-                {selected.detail}
-              </p>
+              {selected.distance || selected.surface ? (
+                <dl className="mt-1.5 space-y-1 text-xs">
+                  {selected.distance && (
+                    <div className="flex gap-2">
+                      <dt className="w-16 shrink-0 text-white/45">Distance</dt>
+                      <dd className="font-medium text-white/85">
+                        {selected.distance}
+                      </dd>
+                    </div>
+                  )}
+                  {selected.surface && (
+                    <div className="flex gap-2">
+                      <dt className="w-16 shrink-0 text-white/45">Surface</dt>
+                      <dd className="font-medium text-white/85">
+                        {selected.surface}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              ) : (
+                <p className="mt-1 text-xs leading-relaxed text-white/70">
+                  {selected.note}
+                </p>
+              )}
             </div>
           </Popup>
         )}
