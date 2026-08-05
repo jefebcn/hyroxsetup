@@ -203,20 +203,31 @@ export const buildingsLayer: LayerProps = {
   },
 };
 
-// --- Stations (markers + popups) -------------------------------------------
-// Removed the previously-guessed station coordinates. Provide real station
-// positions and they can be added back here precisely.
+// --- Stations (markers) ----------------------------------------------------
+// The 8 workout stations plus Start and Finish, positioned inside the Red
+// (indoor) and Green (outdoor) polygons. Coordinates provided verbatim.
 
-export type StationCategory = "finish" | "cardio" | "sled" | "strength";
+export type StationType = "indoor" | "outdoor";
+export type StationIcon = "Play" | "Flag" | "Activity" | "Dumbbell" | "Target";
 
 export interface Station {
   id: string;
   name: string;
-  description: string;
-  category: StationCategory;
-  /** Which zone toggle controls this marker's visibility. */
-  zone: "arena" | "village";
-  coordinates: [number, number];
+  lng: number;
+  lat: number;
+  type: StationType;
+  icon: StationIcon;
 }
 
-export const STATIONS: Station[] = [];
+export const STATIONS: Station[] = [
+  { id: "start", name: "START", lng: 12.4754, lat: 43.9701, type: "outdoor", icon: "Play" },
+  { id: "st1", name: "1. SkiErg", lng: 12.4752, lat: 43.9712, type: "indoor", icon: "Activity" },
+  { id: "st2", name: "2. Sled Push", lng: 12.4756, lat: 43.9701, type: "outdoor", icon: "Dumbbell" },
+  { id: "st3", name: "3. Sled Pull", lng: 12.4758, lat: 43.9702, type: "outdoor", icon: "Dumbbell" },
+  { id: "st4", name: "4. Burpees", lng: 12.476, lat: 43.9702, type: "outdoor", icon: "Activity" },
+  { id: "st5", name: "5. RowErg", lng: 12.4756, lat: 43.971, type: "indoor", icon: "Activity" },
+  { id: "st6", name: "6. Farmers Carry", lng: 12.4762, lat: 43.9703, type: "outdoor", icon: "Dumbbell" },
+  { id: "st7", name: "7. Sandbags", lng: 12.4764, lat: 43.9704, type: "outdoor", icon: "Dumbbell" },
+  { id: "st8", name: "8. Wall Balls", lng: 12.4755, lat: 43.9707, type: "indoor", icon: "Target" },
+  { id: "finish", name: "FINISH", lng: 12.4752, lat: 43.9709, type: "indoor", icon: "Flag" },
+];

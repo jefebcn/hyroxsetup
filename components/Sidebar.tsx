@@ -1,9 +1,15 @@
 "use client";
 
-import { Footprints, Building2, Tent, MapPin, type LucideIcon } from "lucide-react";
+import {
+  Footprints,
+  Building2,
+  Tent,
+  MapPin,
+  type LucideIcon,
+} from "lucide-react";
 import { HYROX } from "@/lib/hyrox-data";
 
-export type LayerKey = "running" | "arena" | "village";
+export type LayerKey = "running" | "arena" | "village" | "stations";
 export type LayerState = Record<LayerKey, boolean>;
 
 interface ToggleConfig {
@@ -40,6 +46,14 @@ const TOGGLES: ToggleConfig[] = [
     sublabel: "Heavy sleds & lifting · Stadium Parking",
     icon: Tent,
     accent: HYROX.turf,
+  },
+  {
+    key: "stations",
+    emoji: "📍",
+    label: "Station Markers",
+    sublabel: "8 workouts + Start & Finish",
+    icon: MapPin,
+    accent: HYROX.yellow,
   },
 ];
 
