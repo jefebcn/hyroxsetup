@@ -97,15 +97,22 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
     );
   }
 
-  // --- Expanded: full panel ---
+  // --- Expanded: bottom sheet on mobile, top-left panel on desktop ---
   return (
     <aside
-      className="absolute left-3 top-3 z-10 flex max-h-[calc(100dvh-1.5rem)] w-[300px]
-                 max-w-[calc(100vw-1.5rem)] flex-col rounded-2xl border border-white/10
-                 bg-black/60 text-white shadow-2xl shadow-black/50 backdrop-blur-md
-                 sm:left-4 sm:top-4 sm:w-[320px] sm:max-h-[calc(100dvh-2rem)]"
+      className="fixed inset-x-0 bottom-0 z-10 flex max-h-[82dvh] w-full flex-col
+                 rounded-t-2xl border-t border-white/10 bg-black/70 text-white
+                 shadow-2xl shadow-black/60 backdrop-blur-md
+                 animate-[hyrox-in_0.24s_ease-out]
+                 sm:inset-x-auto sm:bottom-auto sm:left-4 sm:top-4 sm:w-[320px]
+                 sm:max-h-[calc(100dvh-2rem)] sm:rounded-2xl sm:border"
     >
-      {/* Header (sticky so the collapse control is always reachable) */}
+      {/* Grab handle (mobile bottom-sheet affordance) */}
+      <div className="flex justify-center pt-2.5 sm:hidden">
+        <span className="h-1 w-10 rounded-full bg-white/25" />
+      </div>
+
+      {/* Header (the collapse control is always reachable) */}
       <header className="flex items-start justify-between gap-2 border-b border-white/10 p-4 pb-3 sm:p-5 sm:pb-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
