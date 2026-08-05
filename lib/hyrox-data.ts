@@ -217,17 +217,19 @@ export interface Station {
   lat: number;
   type: StationType;
   icon: StationIcon;
+  /** Short description shown in the click popup. */
+  detail: string;
 }
 
 export const STATIONS: Station[] = [
-  { id: "start", name: "START", lng: 12.4754, lat: 43.9701, type: "outdoor", icon: "Play" },
-  { id: "st1", name: "1. SkiErg", lng: 12.475295, lat: 43.971077, type: "indoor", icon: "Activity" },
-  { id: "st2", name: "2. Sled Push", lng: 12.4756, lat: 43.9701, type: "outdoor", icon: "Dumbbell" },
-  { id: "st3", name: "3. Sled Pull", lng: 12.4758, lat: 43.9702, type: "outdoor", icon: "Dumbbell" },
-  { id: "st4", name: "4. Burpees", lng: 12.476, lat: 43.9702, type: "outdoor", icon: "Activity" },
-  { id: "st5", name: "5. RowErg", lng: 12.475535, lat: 43.970957, type: "indoor", icon: "Activity" },
-  { id: "st6", name: "6. Farmers Carry", lng: 12.4762, lat: 43.9703, type: "outdoor", icon: "Dumbbell" },
-  { id: "st7", name: "7. Sandbags", lng: 12.4764, lat: 43.9704, type: "outdoor", icon: "Dumbbell" },
-  { id: "st8", name: "8. Wall Balls", lng: 12.475475, lat: 43.970777, type: "indoor", icon: "Target" },
-  { id: "finish", name: "FINISH", lng: 12.475295, lat: 43.970897, type: "indoor", icon: "Flag" },
+  { id: "start", name: "START", lng: 12.4754, lat: 43.9701, type: "outdoor", icon: "Play", detail: "Race start. Each station is separated by a 1 km run (8 km total)." },
+  { id: "st1", name: "1. SkiErg", lng: 12.475295, lat: 43.971077, type: "indoor", icon: "Activity", detail: "1,000 m ski. Full-body opener on the SkiErg." },
+  { id: "st2", name: "2. Sled Push", lng: 12.4756, lat: 43.9701, type: "outdoor", icon: "Dumbbell", detail: "50 m heavy sled push across the turf." },
+  { id: "st3", name: "3. Sled Pull", lng: 12.4758, lat: 43.9702, type: "outdoor", icon: "Dumbbell", detail: "50 m sled pull. Grip and posterior-chain grinder." },
+  { id: "st4", name: "4. Burpees", lng: 12.476, lat: 43.9702, type: "outdoor", icon: "Activity", detail: "80 m of burpee broad jumps." },
+  { id: "st5", name: "5. RowErg", lng: 12.475535, lat: 43.970957, type: "indoor", icon: "Activity", detail: "1,000 m row on the RowErg." },
+  { id: "st6", name: "6. Farmers Carry", lng: 12.4762, lat: 43.9703, type: "outdoor", icon: "Dumbbell", detail: "200 m loaded carry through the power village." },
+  { id: "st7", name: "7. Sandbags", lng: 12.4764, lat: 43.9704, type: "outdoor", icon: "Dumbbell", detail: "100 m of walking sandbag lunges." },
+  { id: "st8", name: "8. Wall Balls", lng: 12.475475, lat: 43.970777, type: "indoor", icon: "Target", detail: "100 wall balls to close the race." },
+  { id: "finish", name: "FINISH", lng: 12.475295, lat: 43.970897, type: "indoor", icon: "Flag", detail: "The finish line — timing gate and podium." },
 ];

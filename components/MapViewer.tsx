@@ -5,6 +5,7 @@ import Map, {
   Source,
   Layer,
   Marker,
+  Popup,
   NavigationControl,
 } from "react-map-gl/mapbox";
 import {
@@ -33,6 +34,7 @@ import {
   powerVillageLayer,
   buildingsLayer,
   STATIONS,
+  type Station,
   type StationIcon,
 } from "@/lib/hyrox-data";
 
@@ -54,6 +56,7 @@ export default function MapViewer() {
     village: true,
     stations: true,
   });
+  const [selected, setSelected] = useState<Station | null>(null);
 
   const handleToggle = useCallback((key: LayerKey) => {
     setLayers((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -75,6 +78,7 @@ export default function MapViewer() {
         maxPitch={85}
         antialias
         style={{ width: "100vw", height: "100vh" }}
+        onClick={() => setSelected(null)}
       >
         <NavigationControl position="bottom-right" visualizePitch />
 
@@ -119,14 +123,23 @@ export default function MapViewer() {
                 longitude={station.lng}
                 latitude={station.lat}
                 anchor="bottom"
+                onClick={(e) => {
+                  // Keep the map's onClick from immediately closing the popup.
+                  e.originalEvent.stopPropagation();
+                  setSelected(station);
+                }}
               >
-                <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  aria-label={station.name}
+                  className="flex cursor-pointer flex-col items-center transition-transform hover:scale-110"
+                >
                   <div
                     className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold shadow-lg ring-1 ring-black/30 ${
                       indoor
                         ? "bg-red-600 text-yellow-300"
                         : "bg-green-600 text-white"
-                    }`}
+                    } ${selected?.id === station.id ? "ring-2 ring-white" : ""}`}
                   >
                     <Icon className="h-3.5 w-3.5 shrink-0" />
                     <span>{station.name}</span>
@@ -137,10 +150,41 @@ export default function MapViewer() {
                       indoor ? "bg-red-600" : "bg-green-600"
                     }`}
                   />
-                </div>
+                </button>
               </Marker>
             );
           })}
+
+        {/* Click popup with station details */}
+        {selected && (
+          <Popup
+            longitude={selected.lng}
+            latitude={selected.lat}
+            anchor="bottom"
+            offset={28}
+            closeButton={false}
+            onClose={() => setSelected(null)}
+            className="hyrox-popup"
+          >
+            <div className="min-w-[190px] p-1">
+              <div className="mb-1 flex items-center gap-2">
+                <span
+                  className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                    selected.type === "indoor"
+                      ? "bg-red-600/25 text-red-300"
+                      : "bg-green-600/25 text-green-300"
+                  }`}
+                >
+                  {selected.type === "indoor" ? "Indoor" : "Outdoor"}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white">{selected.name}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-white/70">
+                {selected.detail}
+              </p>
+            </div>
+          </Popup>
+        )}
       </Map>
 
       <Sidebar layers={layers} onToggle={handleToggle} />
