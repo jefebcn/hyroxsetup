@@ -16,6 +16,7 @@ import {
   RUN_TARGET_M,
   STATION_FOOT_M,
   MACHINE_M,
+  LOGISTICS,
 } from "@/lib/hyrox-data";
 
 export type LayerKey = "running" | "arena" | "village" | "stations";
@@ -212,6 +213,27 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
 
         {/* Race format & distances */}
         <RaceFormat />
+
+        {/* Materials & logistics */}
+        <details className="mt-5 border-t border-white/10 pt-4">
+          <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-widest text-white/40">
+            📦 Materials &amp; logistics
+          </summary>
+          <div className="mt-3 space-y-3">
+            {LOGISTICS.map((group) => (
+              <div key={group.zone}>
+                <p className="mb-1 text-xs font-semibold text-white/70">
+                  {group.zone}
+                </p>
+                <ul className="list-disc space-y-0.5 pl-4 text-xs text-white/55">
+                  {group.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </details>
 
         {/* Legend */}
         <footer className="mt-5 border-t border-white/10 pt-4">

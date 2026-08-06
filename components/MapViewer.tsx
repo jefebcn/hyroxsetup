@@ -35,6 +35,8 @@ import {
   powerVillageLayer,
   buildingsLayer,
   STATIONS,
+  RACE_SEQUENCE,
+  RUNNING_LOOP_LENGTH_M,
   type Station,
   type StationIcon,
 } from "@/lib/hyrox-data";
@@ -214,60 +216,126 @@ export default function MapViewer() {
             );
           })}
 
-        {/* Click popup with station details */}
+        {/* Click popup with the full step-by-step for the station */}
         {selected && (
-          <Popup
-            longitude={selected.lng}
-            latitude={selected.lat}
-            anchor="bottom"
-            offset={28}
-            closeButton={false}
-            onClose={() => setSelected(null)}
-            className="hyrox-popup"
-          >
-            <div className="min-w-[190px] p-1">
-              <div className="mb-1.5 flex items-center gap-2">
-                <span
-                  className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                    selected.type === "indoor"
-                      ? "bg-red-600/25 text-red-300"
-                      : "bg-green-600/25 text-green-300"
-                  }`}
-                >
-                  {selected.type === "indoor" ? "Indoor" : "Outdoor"}
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-white">{selected.name}</h3>
-              {selected.distance || selected.surface ? (
-                <dl className="mt-1.5 space-y-1 text-xs">
-                  {selected.distance && (
-                    <div className="flex gap-2">
-                      <dt className="w-16 shrink-0 text-white/45">Distance</dt>
-                      <dd className="font-medium text-white/85">
-                        {selected.distance}
-                      </dd>
-                    </div>
-                  )}
-                  {selected.surface && (
-                    <div className="flex gap-2">
-                      <dt className="w-16 shrink-0 text-white/45">Surface</dt>
-                      <dd className="font-medium text-white/85">
-                        {selected.surface}
-                      </dd>
-                    </div>
-                  )}
-                </dl>
-              ) : (
-                <p className="mt-1 text-xs leading-relaxed text-white/70">
-                  {selected.note}
-                </p>
-              )}
-            </div>
-          </Popup>
+          <StationPopup station={selected} onClose={() => setSelected(null)} />
         )}
       </Map>
 
       <Sidebar layers={layers} onToggle={handleToggle} />
+    </div>
+  );
+}
+
+const stationById = (id: string) => STATIONS.find((s) => s.id === id) ?? null;
+
+type FlowStep = { label?: string; value: string; strong?: boolean };
+
+function StationPopup({
+  station,
+  onClose,
+}: {
+  station: Station;
+  onClose: () => void;
+}) {
+  const idx = RACE_SEQUENCE.indexOf(station.id);
+  const prev = idx > 0 ? stationById(RACE_SEQUENCE[idx - 1]) : null;
+  const next =
+    idx >= 0 && idx < RACE_SEQUENCE.length - 1
+      ? stationById(RACE_SEQUENCE[idx + 1])
+      : null;
+  const laps = (1000 / RUNNING_LOOP_LENGTH_M).toFixed(1);
+  const indoor = station.type === "indoor";
+  const isStart = station.id === "start";
+  const isFinish = station.id === "finish";
+
+  const steps: FlowStep[] = [];
+  if (isStart) {
+    steps.push({ value: "Start the race", strong: true });
+    steps.push({ label: "Run", value: `1 km · ≈ ${laps} laps` });
+    if (next) steps.push({ label: "Then", value: next.name });
+  } else if (isFinish) {
+    if (prev) steps.push({ label: "Arrive from", value: prev.name });
+    steps.push({ value: "Finish — race complete", strong: true });
+  } else {
+    if (prev) steps.push({ label: "Arrive from", value: prev.name });
+    steps.push({ label: "Run", value: `1 km · ≈ ${laps} laps` });
+    steps.push({ value: `Do ${station.distance ?? "the station"}`, strong: true });
+    if (next) steps.push({ label: "Then", value: next.name });
+  }
+
+  return (
+    <Popup
+      longitude={station.lng}
+      latitude={station.lat}
+      anchor="bottom"
+      offset={28}
+      closeButton={false}
+      onClose={onClose}
+      className="hyrox-popup"
+      maxWidth="280px"
+    >
+      <div className="w-[232px] p-1">
+        <div className="mb-1.5 flex items-center gap-2">
+          <span
+            className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+              indoor ? "bg-red-600/25 text-red-300" : "bg-green-600/25 text-green-300"
+            }`}
+          >
+            {indoor ? "Indoor" : "Outdoor"}
+          </span>
+          {station.order != null && (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+              Station {station.order}/8
+            </span>
+          )}
+        </div>
+        <h3 className="text-sm font-bold text-white">{station.name}</h3>
+
+        {/* Step-by-step flow: where you come from, the run, the station, next */}
+        <ol className="mt-2 space-y-1 border-l-2 border-white/15 pl-3 text-xs">
+          {steps.map((s, i) => (
+            <li
+              key={i}
+              className={s.strong ? "font-semibold text-white" : "text-white/80"}
+            >
+              {s.label && <span className="text-white/45">{s.label}: </span>}
+              {s.value}
+            </li>
+          ))}
+        </ol>
+
+        {/* Specs: surface / space / equipment */}
+        {(station.surface || station.space || station.equipment) && (
+          <dl className="mt-2 space-y-1 border-t border-white/10 pt-2 text-xs">
+            {station.surface && <SpecRow k="Surface" v={station.surface} />}
+            {station.space && <SpecRow k="Space" v={station.space} />}
+            {station.equipment && (
+              <div className="flex gap-2">
+                <dt className="w-[64px] shrink-0 text-white/45">Equipment</dt>
+                <dd className="font-medium text-white/85">
+                  {station.equipment.join(", ")}
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
+
+        {station.note && station.order == null && (
+          <p className="mt-2 border-t border-white/10 pt-2 text-[11px] leading-relaxed text-white/50">
+            {station.note}
+          </p>
+        )}
+      </div>
+    </Popup>
+  );
+}
+
+function SpecRow({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex gap-2">
+      <dt className="w-[64px] shrink-0 text-white/45">{k}</dt>
+      <dd className="font-medium text-white/85">{v}</dd>
     </div>
   );
 }
