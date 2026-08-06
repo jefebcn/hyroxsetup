@@ -225,17 +225,17 @@ export interface Station {
 }
 
 export const STATIONS: Station[] = [
-  // OUTDOOR (Green polygon) — evenly spaced along the center axis (race lanes)
-  { id: "start", name: "START", lng: 12.47545, lat: 43.96995, type: "outdoor", icon: "Play", note: "Race start — 8 × 1 km runs separate the stations (8 km total)." },
-  { id: "st2", name: "2. Sled Push", lng: 12.47565, lat: 43.97002, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
-  { id: "st3", name: "3. Sled Pull", lng: 12.47585, lat: 43.9701, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
-  { id: "st4", name: "4. Burpees", lng: 12.47605, lat: 43.97018, type: "outdoor", icon: "Activity", distance: "80 m broad jumps", surface: "Artificial turf" },
-  { id: "st6", name: "6. Farmers Carry", lng: 12.47625, lat: 43.97026, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt" },
-  { id: "st7", name: "7. Sandbags", lng: 12.47645, lat: 43.97034, type: "outdoor", icon: "Dumbbell", distance: "100 m lunges", surface: "Artificial turf" },
+  // OUTDOOR (Green polygon) — distributed on a 3×2 grid inside the parking
+  { id: "start", name: "START", lng: 12.475917, lat: 43.969999, type: "outdoor", icon: "Play", note: "Race start — 8 × 1 km runs separate the stations (8 km total)." },
+  { id: "st2", name: "2. Sled Push", lng: 12.476118, lat: 43.970078, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
+  { id: "st3", name: "3. Sled Pull", lng: 12.476386, lat: 43.970289, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
+  { id: "st4", name: "4. Burpees", lng: 12.475954, lat: 43.970286, type: "outdoor", icon: "Activity", distance: "80 m broad jumps", surface: "Artificial turf" },
+  { id: "st6", name: "6. Farmers Carry", lng: 12.475652, lat: 43.970117, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt" },
+  { id: "st7", name: "7. Sandbags", lng: 12.476081, lat: 43.970327, type: "outdoor", icon: "Dumbbell", distance: "100 m lunges", surface: "Artificial turf" },
 
-  // INDOOR (Red polygon) — spaced for logical entry/exit flow
-  { id: "st1", name: "1. SkiErg", lng: 12.4758, lat: 43.9707, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
-  { id: "st5", name: "5. RowErg", lng: 12.4751, lat: 43.971, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
-  { id: "st8", name: "8. Wall Balls", lng: 12.4754, lat: 43.9713, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet" },
-  { id: "finish", name: "FINISH", lng: 12.4755, lat: 43.9709, type: "indoor", icon: "Flag", note: "Finish line — timing gate and podium." },
+  // INDOOR (Red polygon) — single file up the arena (entry → finish)
+  { id: "st1", name: "1. SkiErg", lng: 12.475327, lat: 43.970558, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
+  { id: "st5", name: "5. RowErg", lng: 12.4754, lat: 43.970782, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
+  { id: "st8", name: "8. Wall Balls", lng: 12.475473, lat: 43.971006, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet" },
+  { id: "finish", name: "FINISH", lng: 12.475546, lat: 43.971229, type: "indoor", icon: "Flag", note: "Finish line — timing gate and podium." },
 ];

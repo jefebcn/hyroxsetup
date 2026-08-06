@@ -4,29 +4,30 @@ A full-screen, dark-themed 3D map viewer for the **HYROX** fitness competition a
 **Multieventi Sport Domus** in the Republic of San Marino. Built to show stakeholders that the
 hybrid indoor/outdoor event layout has no bottlenecks across its three zones.
 
-Centered on the venue (`12.4795, 43.9715`) with 3D terrain so the San Marino hill's elevation is
-visible, an isometric camera (`pitch: 60`, `bearing: -20`), and independent layer toggles for each
-event zone.
+Centered on the Multieventi arena (`12.4754, 43.9709`) with 3D terrain so the San Marino hill's
+elevation is visible, an isometric camera (`pitch: 60`, `bearing: -20`), and independent layer
+toggles for each event zone. Zone geometry is aligned to the real venue (OpenStreetMap-derived).
 
 ## Features
 
 - 🗺️ Full-screen Mapbox GL canvas (`100vw` × `100vh`) on the `dark-v11` style
 - ⛰️ 3D terrain (`mapbox-dem`) revealing the venue's elevation
 - 🏙️ Surrounding city rendered as 3D `fill-extrusion` buildings for real isometric depth
-- 📍 Interactive station markers (Finish Line, Cardio, Sleds, Strength) with click-to-open popups
-- 🎛️ Glass-morphism sidebar with three independent layer toggles:
-  - 🏃 **1km Running Loop** — dashed yellow `LineString` circling the building
-  - 🏟️ **Indoor Arena** — dark-red 3D extruded polygon (Cardio & Finish Line)
-  - ⛺ **Power Village** — green 3D extruded polygon (turf / heavy weights)
+- 📍 10 interactive station markers (Start, 8 workouts, Finish) with click-to-open popups
+  (distance + surface); Start/Finish highlighted in brand black/yellow
+- 🎛️ Glass-morphism control panel — a top-left panel on desktop, a bottom sheet on mobile — with
+  four independent layer toggles:
+  - 🏃 **1km Running Loop** — animated dashed yellow `LineString` tracing Via Rancaglia
+  - 🏟️ **Indoor Arena** — semi-transparent red 3D extrusion (Cardio & Finish Line)
+  - ⛺ **Power Village** — semi-transparent green 3D extrusion (turf / heavy weights)
+  - 📍 **Station Markers** — show/hide all workout markers
 - 🎨 HYROX brand palette (Black, Yellow `#fbc02d`, Red `#e74c3c`)
-
-> Station markers are tied to their parent zone's toggle — hiding a zone hides its stations too.
 
 ## Tech stack
 
 | Concern    | Choice                                    |
 | ---------- | ----------------------------------------- |
-| Framework  | Next.js 15 (App Router) + React 19 + TS   |
+| Framework  | Next.js 16 (App Router) + React 19 + TS   |
 | Styling    | Tailwind CSS v4                           |
 | Mapping    | Mapbox GL JS v3 via `react-map-gl` v8     |
 | Icons      | `lucide-react`                            |
