@@ -13,7 +13,7 @@ import {
 import {
   HYROX,
   RUNNING_LOOP_LENGTH_M,
-  RUN_COUNT,
+  RUN_TARGET_M,
   STATION_FOOT_M,
   MACHINE_M,
 } from "@/lib/hyrox-data";
@@ -35,8 +35,8 @@ const TOGGLES: ToggleConfig[] = [
   {
     key: "running",
     emoji: "🏃",
-    label: "1km Running Loop",
-    sublabel: "Inclined outdoor track · Via Rancaglia",
+    label: "Running Loop",
+    sublabel: "Lap route · indoor ⇄ piazza stations",
     icon: Footprints,
     accent: HYROX.yellow,
   },
@@ -283,12 +283,10 @@ npm run build  # production build`}
 }
 
 function RaceFormat() {
-  const loopKm = (RUNNING_LOOP_LENGTH_M / 1000).toFixed(2);
-  const runTotalKm = ((RUN_COUNT * RUNNING_LOOP_LENGTH_M) / 1000).toFixed(1);
-  const footTotalKm = (
-    (RUN_COUNT * RUNNING_LOOP_LENGTH_M + STATION_FOOT_M) /
-    1000
-  ).toFixed(2);
+  const lapM = RUNNING_LOOP_LENGTH_M;
+  const runTargetKm = (RUN_TARGET_M / 1000).toFixed(1);
+  const lapsForRun = (RUN_TARGET_M / lapM).toFixed(1);
+  const footTotalKm = ((RUN_TARGET_M + STATION_FOOT_M) / 1000).toFixed(2);
 
   return (
     <section className="mt-5 border-t border-white/10 pt-4">
@@ -296,8 +294,9 @@ function RaceFormat() {
         Race format &amp; distances
       </p>
       <dl className="space-y-1 text-xs">
-        <MetricRow label="Run loop" value={`${loopKm} km × ${RUN_COUNT}`} />
-        <MetricRow label="Total run" value={`${runTotalKm} km`} highlight />
+        <MetricRow label="Lap length" value={`${lapM} m`} />
+        <MetricRow label="Run target" value={`${runTargetKm} km`} highlight />
+        <MetricRow label="Laps for the run" value={`≈ ${lapsForRun}`} />
         <MetricRow label="Stations (on foot)" value={`${STATION_FOOT_M} m`} />
         <MetricRow
           label="Ergometers"
@@ -306,8 +305,9 @@ function RaceFormat() {
         <MetricRow label="Total on foot" value={`${footTotalKm} km`} highlight />
       </dl>
       <p className="mt-2 text-[11px] leading-relaxed text-white/40">
-        8 laps of the yellow loop — one before each station: Run → SkiErg → Run →
-        Sled Push → … → Wall Balls → Finish.
+        HYROX = 8 × 1 km runs (one before each station). This {lapM} m lap ≈{" "}
+        {(1000 / lapM).toFixed(2)} laps per 1 km run, {lapsForRun} laps for the
+        full 8 km.
       </p>
     </section>
   );

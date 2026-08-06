@@ -20,10 +20,10 @@ export const VENUE = {
 } as const;
 
 export const INITIAL_VIEW_STATE = {
-  // Centered on the 1 km loop so the whole circuit + stations are framed.
-  longitude: 12.4759,
-  latitude: 43.971,
-  zoom: 16.9,
+  // Centered on the lap + stations.
+  longitude: 12.4755,
+  latitude: 43.9706,
+  zoom: 17.2,
   pitch: 60,
   bearing: -20,
 } as const;
@@ -120,26 +120,22 @@ export const powerVillageGeoJSON: FeatureCollection<Polygon> = {
 
 // --- Zone 3: Running Loop (exact traced LineString) ------------------------
 
-// 1 km circuit following real roads (Via Rancaglia along the south, Piazzale
-// Papa Giovanni Paolo II + the service road up the east), wrapping the complex
-// perimeter on the north/west. Calibrated to ~1,000 m. Source: OpenStreetMap.
+// Traced "lap 1" route (provided): from the indoor stations (1 & 5) out to the
+// piazza stations (2-3-4-6-7) and back. ~710 m per lap — the HYROX 8 km run is
+// expressed as multiple laps of this loop (see race metrics).
 const RUNNING_LOOP_COORDS: [number, number][] = [
-  [12.47508, 43.9695], // Via Rancaglia — SW
-  [12.47528, 43.9696],
-  [12.47543, 43.96967],
-  [12.47635, 43.97004],
-  [12.47686, 43.97023],
-  [12.47744, 43.97035],
-  [12.47765, 43.97041], // Via Rancaglia — SE
-  [12.477, 43.97058],
-  [12.4764, 43.97044], // Piazzale Papa Giovanni Paolo II
-  [12.476, 43.9711],
-  [12.4757, 43.97167], // service road — east side, north end
-  [12.4753, 43.9726], // north edge
-  [12.4741, 43.9715], // NW
-  [12.4741, 43.9703], // west edge
-  [12.4747, 43.96975], // SW down
-  [12.47508, 43.9695], // close
+  [12.4751789, 43.9713001],
+  [12.475049, 43.9713091],
+  [12.4747146, 43.971193],
+  [12.4752533, 43.9702314],
+  [12.4761948, 43.9704954],
+  [12.4756456, 43.9714812],
+  [12.4747114, 43.9711815],
+  [12.4752066, 43.9702256],
+  [12.4753866, 43.9696408],
+  [12.4762876, 43.970007],
+  [12.4761992, 43.9700712],
+  [12.4762006, 43.9700751],
 ];
 
 export const runningLoopGeoJSON: FeatureCollection<LineString> = {
@@ -147,7 +143,7 @@ export const runningLoopGeoJSON: FeatureCollection<LineString> = {
   features: [
     {
       type: "Feature",
-      properties: { name: "1 km Running Loop" },
+      properties: { name: "Running Loop" },
       geometry: { type: "LineString", coordinates: RUNNING_LOOP_COORDS },
     },
   ],
@@ -173,11 +169,14 @@ function lineLengthMeters(coords: [number, number][]): number {
 
 // --- Race format & distances (HYROX standard) ------------------------------
 
-/** Measured length of one running lap, in metres (≈ 1 km by design). */
+/** Measured length of one traced lap, in metres. */
 export const RUNNING_LOOP_LENGTH_M = Math.round(lineLengthMeters(RUNNING_LOOP_COORDS));
 
-/** HYROX runs 8 × 1 km laps, one before each workout station. */
+/** HYROX = 8 runs of 1 km, one before each workout station. */
 export const RUN_COUNT = 8;
+
+/** HYROX total running target: 8 × 1 km. */
+export const RUN_TARGET_M = RUN_COUNT * 1000;
 
 /** On-foot station distances (m): sled push 50 + pull 50 + burpees 80 +
  *  farmers carry 200 + sandbag lunges 100. (SkiErg/Row are on ergometers.) */
