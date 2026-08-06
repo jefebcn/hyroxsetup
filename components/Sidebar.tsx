@@ -18,6 +18,7 @@ import {
   MACHINE_M,
   LOGISTICS,
 } from "@/lib/hyrox-data";
+import { useI18n } from "./i18n";
 
 export type LayerKey = "running" | "arena" | "village" | "stations";
 export type LayerState = Record<LayerKey, boolean>;
@@ -25,46 +26,17 @@ export type LayerState = Record<LayerKey, boolean>;
 interface ToggleConfig {
   key: LayerKey;
   emoji: string;
-  label: string;
-  sublabel: string;
+  labelKey: string;
+  subKey: string;
   icon: LucideIcon;
-  /** Accent color used when the toggle is active. */
   accent: string;
 }
 
 const TOGGLES: ToggleConfig[] = [
-  {
-    key: "running",
-    emoji: "🏃",
-    label: "Running Loop",
-    sublabel: "Lap route · indoor ⇄ piazza stations",
-    icon: Footprints,
-    accent: HYROX.yellow,
-  },
-  {
-    key: "arena",
-    emoji: "🏟️",
-    label: "Indoor Arena",
-    sublabel: "Cardio Stations & Finish Line",
-    icon: Building2,
-    accent: HYROX.red,
-  },
-  {
-    key: "village",
-    emoji: "⛺",
-    label: "Power Village",
-    sublabel: "Heavy sleds & lifting · Stadium Parking",
-    icon: Tent,
-    accent: HYROX.turf,
-  },
-  {
-    key: "stations",
-    emoji: "📍",
-    label: "Station Markers",
-    sublabel: "8 workouts + Start & Finish",
-    icon: MapPin,
-    accent: HYROX.yellow,
-  },
+  { key: "running", emoji: "🏃", labelKey: "tog.running", subKey: "tog.running.sub", icon: Footprints, accent: HYROX.yellow },
+  { key: "arena", emoji: "🏟️", labelKey: "tog.arena", subKey: "tog.arena.sub", icon: Building2, accent: HYROX.red },
+  { key: "village", emoji: "⛺", labelKey: "tog.village", subKey: "tog.village.sub", icon: Tent, accent: HYROX.turf },
+  { key: "stations", emoji: "📍", labelKey: "tog.stations", subKey: "tog.stations.sub", icon: MapPin, accent: HYROX.yellow },
 ];
 
 interface SidebarProps {
@@ -73,10 +45,10 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ layers, onToggle }: SidebarProps) {
+  const { t, lang, setLang } = useI18n();
   const [collapsed, setCollapsed] = useState(false);
 
   // Collapse by default on small screens so the map is visible on load.
-  // One-time responsive init synced to the viewport width.
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -84,13 +56,12 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
     }
   }, []);
 
-  // --- Collapsed: compact branded toggle button ---
   if (collapsed) {
     return (
       <button
         type="button"
         onClick={() => setCollapsed(false)}
-        aria-label="Show event layers"
+        aria-label={t("aria.show")}
         className="absolute left-3 top-3 z-10 flex items-center gap-2 rounded-full
                    border border-white/10 bg-black/60 px-3.5 py-2.5 shadow-lg
                    shadow-black/50 backdrop-blur-md transition-colors hover:bg-black/70
@@ -104,7 +75,6 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
     );
   }
 
-  // --- Expanded: bottom sheet on mobile, top-left panel on desktop ---
   return (
     <aside
       className="fixed inset-x-0 bottom-0 z-10 flex max-h-[82dvh] w-full flex-col
@@ -119,7 +89,7 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
         <span className="h-1 w-10 rounded-full bg-white/25" />
       </div>
 
-      {/* Header (the collapse control is always reachable) */}
+      {/* Header */}
       <header className="flex items-start justify-between gap-2 border-b border-white/10 p-4 pb-3 sm:p-5 sm:pb-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -134,19 +104,22 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
           </div>
           <p className="mt-2 flex items-start gap-1.5 text-xs text-white/50">
             <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>Multieventi Sport Domus · San Marino</span>
+            <span>{t("venue")}</span>
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setCollapsed(true)}
-          aria-label="Hide panel"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg
-                     border border-white/10 bg-white/5 text-white/70 transition-colors
-                     hover:bg-white/10 hover:text-white"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <LangToggle lang={lang} setLang={setLang} />
+          <button
+            type="button"
+            onClick={() => setCollapsed(true)}
+            aria-label={t("aria.hide")}
+            className="flex h-8 w-8 items-center justify-center rounded-lg
+                       border border-white/10 bg-white/5 text-white/70 transition-colors
+                       hover:bg-white/10 hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
       {/* Scrollable content */}
@@ -154,17 +127,17 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
         {/* Toggles */}
         <div className="space-y-2.5">
           <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-white/40">
-            Event Zones
+            {t("eventZones")}
           </p>
-          {TOGGLES.map((t) => {
-            const active = layers[t.key];
-            const Icon = t.icon;
+          {TOGGLES.map((tog) => {
+            const active = layers[tog.key];
+            const Icon = tog.icon;
             return (
               <button
-                key={t.key}
+                key={tog.key}
                 type="button"
                 aria-pressed={active}
-                onClick={() => onToggle(t.key)}
+                onClick={() => onToggle(tog.key)}
                 className={`group flex w-full items-center gap-3 rounded-xl border px-3 py-3
                             text-left transition-all duration-200
                             ${
@@ -173,33 +146,28 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
                                 : "border-white/5 bg-white/[0.02] opacity-60 hover:opacity-100"
                             }`}
               >
-                {/* Icon chip */}
                 <span
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors"
                   style={{
-                    backgroundColor: active ? `${t.accent}22` : "rgba(255,255,255,0.04)",
-                    color: active ? t.accent : "rgba(255,255,255,0.4)",
+                    backgroundColor: active ? `${tog.accent}22` : "rgba(255,255,255,0.04)",
+                    color: active ? tog.accent : "rgba(255,255,255,0.4)",
                   }}
                 >
                   <Icon className="h-5 w-5" />
                 </span>
-
-                {/* Label */}
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5 text-sm font-semibold">
-                    <span aria-hidden>{t.emoji}</span>
-                    {t.label}
+                    <span aria-hidden>{tog.emoji}</span>
+                    {t(tog.labelKey)}
                   </span>
                   <span className="block truncate text-xs text-white/45">
-                    {t.sublabel}
+                    {t(tog.subKey)}
                   </span>
                 </span>
-
-                {/* Switch */}
                 <span
                   className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200
                               ${active ? "" : "bg-white/15"}`}
-                  style={active ? { backgroundColor: t.accent } : undefined}
+                  style={active ? { backgroundColor: tog.accent } : undefined}
                 >
                   <span
                     className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200
@@ -217,20 +185,11 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
         {/* Materials & logistics */}
         <details className="mt-5 border-t border-white/10 pt-4">
           <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-widest text-white/40">
-            📦 Materials &amp; logistics
+            📦 {t("materials")}
           </summary>
           <div className="mt-3 space-y-3">
             {LOGISTICS.map((group) => (
-              <div key={group.zone}>
-                <p className="mb-1 text-xs font-semibold text-white/70">
-                  {group.zone}
-                </p>
-                <ul className="list-disc space-y-0.5 pl-4 text-xs text-white/55">
-                  {group.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
+              <LogisticsGroup key={group.zone} zone={group.zone} items={group.items} />
             ))}
           </div>
         </details>
@@ -238,99 +197,79 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
         {/* Legend */}
         <footer className="mt-5 border-t border-white/10 pt-4">
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-white/40">
-            Legend
+            {t("legend")}
           </p>
           <ul className="space-y-1.5 text-xs text-white/60">
             <LegendItem color={HYROX.yellow} dashed>
-              Dashed line — running route
+              {t("lg.dash")}
             </LegendItem>
-            <LegendItem color={HYROX.darkRed}>Red volume — indoor arena</LegendItem>
-            <LegendItem color={HYROX.turf}>Green volume — power village turf</LegendItem>
+            <LegendItem color={HYROX.darkRed}>{t("lg.red")}</LegendItem>
+            <LegendItem color={HYROX.turf}>{t("lg.green")}</LegendItem>
           </ul>
         </footer>
 
-        {/* Build & setup — what you need to run/deploy this project */}
-        <details className="mt-4 border-t border-white/10 pt-4">
-          <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-widest text-white/40">
-            🔧 Build &amp; setup
-          </summary>
-          <div className="mt-3 space-y-3 text-xs leading-relaxed text-white/60">
-            <div>
-              <p className="mb-1 font-semibold text-white/70">Prerequisites</p>
-              <ul className="list-disc space-y-0.5 pl-4 text-white/55">
-                <li>Node.js 18+ and npm</li>
-                <li>
-                  A Mapbox account + <span className="text-white/75">public</span>{" "}
-                  token (<code>pk.…</code>)
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="mb-1 font-semibold text-white/70">Environment variable</p>
-              <pre className="overflow-x-auto rounded-lg bg-black/60 p-2 text-[11px] text-white/80">
-                NEXT_PUBLIC_MAPBOX_TOKEN=pk.•••
-              </pre>
-              <p className="mt-1 text-white/45">
-                Put it in <code>.env.local</code> for local dev, and in Vercel →
-                Settings → Environment Variables for production.
-              </p>
-            </div>
-            <div>
-              <p className="mb-1 font-semibold text-white/70">Commands</p>
-              <pre className="overflow-x-auto rounded-lg bg-black/60 p-2 text-[11px] leading-relaxed text-white/80">
-{`npm install
-npm run dev    # http://localhost:3000
-npm run build  # production build`}
-              </pre>
-            </div>
-            <div>
-              <p className="mb-1 font-semibold text-white/70">Key dependencies</p>
-              <p className="text-white/55">
-                next 16 · react 19 · react-map-gl 8 · mapbox-gl 3 · tailwindcss 4
-                · lucide-react
-              </p>
-            </div>
-            <div>
-              <p className="mb-1 font-semibold text-white/70">Deploy</p>
-              <p className="text-white/55">
-                Vercel — framework preset <em>Next.js</em> (pinned in{" "}
-                <code>vercel.json</code>). Add the token env var, then deploy.
-              </p>
-            </div>
-          </div>
-        </details>
+        {/* Build & setup */}
+        <BuildSetup />
       </div>
     </aside>
   );
 }
 
+function LangToggle({
+  lang,
+  setLang,
+}: {
+  lang: "it" | "en";
+  setLang: (l: "it" | "en") => void;
+}) {
+  return (
+    <div className="flex overflow-hidden rounded-lg border border-white/10 text-[11px] font-bold">
+      {(["it", "en"] as const).map((l) => (
+        <button
+          key={l}
+          type="button"
+          onClick={() => setLang(l)}
+          aria-pressed={lang === l}
+          className={`px-2 py-1.5 uppercase transition-colors ${
+            lang === l ? "text-black" : "bg-white/5 text-white/60 hover:text-white"
+          }`}
+          style={lang === l ? { backgroundColor: HYROX.yellow } : undefined}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function RaceFormat() {
+  const { t, lang } = useI18n();
   const lapM = RUNNING_LOOP_LENGTH_M;
   const runTargetKm = (RUN_TARGET_M / 1000).toFixed(1);
   const lapsForRun = (RUN_TARGET_M / lapM).toFixed(1);
+  const perKm = (1000 / lapM).toFixed(2);
   const footTotalKm = ((RUN_TARGET_M + STATION_FOOT_M) / 1000).toFixed(2);
+
+  const note =
+    lang === "it"
+      ? `HYROX = 8 corse da 1 km (una prima di ogni stazione). Questo giro da ${lapM} m ≈ ${perKm} giri per ogni km, ${lapsForRun} giri per gli 8 km totali.`
+      : `HYROX = 8 × 1 km runs (one before each station). This ${lapM} m lap ≈ ${perKm} laps per 1 km run, ${lapsForRun} laps for the full 8 km.`;
 
   return (
     <section className="mt-5 border-t border-white/10 pt-4">
       <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-white/40">
-        Race format &amp; distances
+        {t("raceFormat")}
       </p>
       <dl className="space-y-1 text-xs">
-        <MetricRow label="Lap length" value={`${lapM} m`} />
-        <MetricRow label="Run target" value={`${runTargetKm} km`} highlight />
-        <MetricRow label="Laps for the run" value={`≈ ${lapsForRun}`} />
-        <MetricRow label="Stations (on foot)" value={`${STATION_FOOT_M} m`} />
-        <MetricRow
-          label="Ergometers"
-          value={`${MACHINE_M.toLocaleString("en-US")} m`}
-        />
-        <MetricRow label="Total on foot" value={`${footTotalKm} km`} highlight />
+        <MetricRow label={t("rf.lap")} value={`${lapM} m`} />
+        <MetricRow label={t("rf.runTarget")} value={`${runTargetKm} km`} highlight />
+        <MetricRow label={t("rf.laps")} value={`≈ ${lapsForRun}`} />
+        <MetricRow label={t("rf.stationsFoot")} value={`${STATION_FOOT_M} m`} />
+        <MetricRow label={t("rf.ergo")} value={`${MACHINE_M.toLocaleString("en-US")} m`} />
+        <MetricRow label={t("rf.totalFoot")} value={`${footTotalKm} km`} highlight />
+        <MetricRow label={t("rf.divisions")} value={t("rf.divisions.v")} />
       </dl>
-      <p className="mt-2 text-[11px] leading-relaxed text-white/40">
-        HYROX = 8 × 1 km runs (one before each station). This {lapM} m lap ≈{" "}
-        {(1000 / lapM).toFixed(2)} laps per 1 km run, {lapsForRun} laps for the
-        full 8 km.
-      </p>
+      <p className="mt-2 text-[11px] leading-relaxed text-white/40">{note}</p>
     </section>
   );
 }
@@ -348,14 +287,72 @@ function MetricRow({
     <div className="flex items-baseline justify-between gap-3">
       <dt className="text-white/50">{label}</dt>
       <dd
-        className={`font-semibold tabular-nums ${
-          highlight ? "" : "text-white/80"
-        }`}
+        className={`font-semibold tabular-nums ${highlight ? "" : "text-white/80"}`}
         style={highlight ? { color: HYROX.yellow } : undefined}
       >
         {value}
       </dd>
     </div>
+  );
+}
+
+function LogisticsGroup({ zone, items }: { zone: string; items: string[] }) {
+  const { d } = useI18n();
+  return (
+    <div>
+      <p className="mb-1 text-xs font-semibold text-white/70">{d(zone)}</p>
+      <ul className="list-disc space-y-0.5 pl-4 text-xs text-white/55">
+        {items.map((item) => (
+          <li key={item}>{d(item)}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function BuildSetup() {
+  const { t } = useI18n();
+  return (
+    <details className="mt-4 border-t border-white/10 pt-4">
+      <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-widest text-white/40">
+        🔧 {t("buildSetup")}
+      </summary>
+      <div className="mt-3 space-y-3 text-xs leading-relaxed text-white/60">
+        <div>
+          <p className="mb-1 font-semibold text-white/70">{t("bs.prereq")}</p>
+          <ul className="list-disc space-y-0.5 pl-4 text-white/55">
+            <li>{t("bs.prereq.node")}</li>
+            <li>{t("bs.prereq.mapbox")}</li>
+          </ul>
+        </div>
+        <div>
+          <p className="mb-1 font-semibold text-white/70">{t("bs.env")}</p>
+          <pre className="overflow-x-auto rounded-lg bg-black/60 p-2 text-[11px] text-white/80">
+            NEXT_PUBLIC_MAPBOX_TOKEN=pk.•••
+          </pre>
+          <p className="mt-1 text-white/45">{t("bs.env.note")}</p>
+        </div>
+        <div>
+          <p className="mb-1 font-semibold text-white/70">{t("bs.commands")}</p>
+          <pre className="overflow-x-auto rounded-lg bg-black/60 p-2 text-[11px] leading-relaxed text-white/80">
+{`npm install
+npm run dev    # http://localhost:3000
+npm run build  # production build`}
+          </pre>
+        </div>
+        <div>
+          <p className="mb-1 font-semibold text-white/70">{t("bs.deps")}</p>
+          <p className="text-white/55">
+            next 16 · react 19 · react-map-gl 8 · mapbox-gl 3 · tailwindcss 4 ·
+            lucide-react
+          </p>
+        </div>
+        <div>
+          <p className="mb-1 font-semibold text-white/70">{t("bs.deploy")}</p>
+          <p className="text-white/55">{t("bs.deploy.note")}</p>
+        </div>
+      </div>
+    </details>
   );
 }
 
