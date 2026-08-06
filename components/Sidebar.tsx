@@ -7,6 +7,7 @@ import {
   Tent,
   MapPin,
   SlidersHorizontal,
+  Crosshair,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -42,9 +43,14 @@ const TOGGLES: ToggleConfig[] = [
 interface SidebarProps {
   layers: LayerState;
   onToggle: (key: LayerKey) => void;
+  onFocusZone?: (key: LayerKey) => void;
 }
 
-export default function Sidebar({ layers, onToggle }: SidebarProps) {
+export default function Sidebar({
+  layers,
+  onToggle,
+  onFocusZone,
+}: SidebarProps) {
   const { t, lang, setLang } = useI18n();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -133,48 +139,63 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
             const active = layers[tog.key];
             const Icon = tog.icon;
             return (
-              <button
+              <div
                 key={tog.key}
-                type="button"
-                aria-pressed={active}
-                onClick={() => onToggle(tog.key)}
-                className={`group flex w-full items-center gap-3 rounded-xl border px-3 py-3
-                            text-left transition-all duration-200
+                className={`flex w-full items-center gap-1 rounded-xl border pr-1 transition-all duration-200
                             ${
                               active
                                 ? "border-white/20 bg-white/10"
                                 : "border-white/5 bg-white/[0.02] opacity-60 hover:opacity-100"
                             }`}
               >
-                <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors"
-                  style={{
-                    backgroundColor: active ? `${tog.accent}22` : "rgba(255,255,255,0.04)",
-                    color: active ? tog.accent : "rgba(255,255,255,0.4)",
-                  }}
-                >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5 text-sm font-semibold">
-                    <span aria-hidden>{tog.emoji}</span>
-                    {t(tog.labelKey)}
-                  </span>
-                  <span className="block truncate text-xs text-white/45">
-                    {t(tog.subKey)}
-                  </span>
-                </span>
-                <span
-                  className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200
-                              ${active ? "" : "bg-white/15"}`}
-                  style={active ? { backgroundColor: tog.accent } : undefined}
+                <button
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => onToggle(tog.key)}
+                  className="flex flex-1 items-center gap-3 px-3 py-3 text-left"
                 >
                   <span
-                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200
-                                ${active ? "translate-x-[18px]" : "translate-x-0.5"}`}
-                  />
-                </span>
-              </button>
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors"
+                    style={{
+                      backgroundColor: active ? `${tog.accent}22` : "rgba(255,255,255,0.04)",
+                      color: active ? tog.accent : "rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5 text-sm font-semibold">
+                      <span aria-hidden>{tog.emoji}</span>
+                      {t(tog.labelKey)}
+                    </span>
+                    <span className="block truncate text-xs text-white/45">
+                      {t(tog.subKey)}
+                    </span>
+                  </span>
+                  <span
+                    className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200
+                                ${active ? "" : "bg-white/15"}`}
+                    style={active ? { backgroundColor: tog.accent } : undefined}
+                  >
+                    <span
+                      className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200
+                                  ${active ? "translate-x-[18px]" : "translate-x-0.5"}`}
+                    />
+                  </span>
+                </button>
+                {onFocusZone && (
+                  <button
+                    type="button"
+                    onClick={() => onFocusZone(tog.key)}
+                    aria-label={t("aria.focus")}
+                    title={t("aria.focus")}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg
+                               text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+                  >
+                    <Crosshair className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>
@@ -205,6 +226,17 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
             </LegendItem>
             <LegendItem color={HYROX.darkRed}>{t("lg.red")}</LegendItem>
             <LegendItem color={HYROX.turf}>{t("lg.green")}</LegendItem>
+          </ul>
+
+          <p className="mb-2 mt-3 text-[11px] font-semibold uppercase tracking-widest text-white/40">
+            {t("lg.pins")}
+          </p>
+          <ul className="space-y-1.5 text-xs text-white/60">
+            <PinItem color="#0a0a0a" ring={HYROX.yellow}>
+              {t("lg.mStartFinish")}
+            </PinItem>
+            <PinItem color="#dc2626">{t("lg.mIndoor")}</PinItem>
+            <PinItem color="#16a34a">{t("lg.mOutdoor")}</PinItem>
           </ul>
         </footer>
 
@@ -268,6 +300,7 @@ function RaceFormat() {
         <MetricRow label={t("rf.ergo")} value={`${MACHINE_M.toLocaleString("en-US")} m`} />
         <MetricRow label={t("rf.totalFoot")} value={`${footTotalKm} km`} highlight />
         <MetricRow label={t("rf.divisions")} value={t("rf.divisions.v")} />
+        <MetricRow label={t("rf.estTime")} value={t("rf.estTime.v")} />
       </dl>
       <p className="mt-2 text-[11px] leading-relaxed text-white/40">{note}</p>
     </section>
@@ -353,6 +386,26 @@ npm run build  # production build`}
         </div>
       </div>
     </details>
+  );
+}
+
+function PinItem({
+  color,
+  ring,
+  children,
+}: {
+  color: string;
+  ring?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="flex items-center gap-2">
+      <span
+        className="inline-block h-3 w-3 shrink-0 rounded-full border"
+        style={{ backgroundColor: color, borderColor: ring ?? "transparent" }}
+      />
+      {children}
+    </li>
   );
 }
 
