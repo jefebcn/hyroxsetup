@@ -263,20 +263,75 @@ export interface Station {
   surface?: string;
   /** Free-form note used for Start / Finish (no distance/surface). */
   note?: string;
+  /** Position in the race sequence (1–8 for workout stations). */
+  order?: number;
+  /** Footprint / space the station occupies. */
+  space?: string;
+  /** Equipment & materials required at the station. */
+  equipment?: string[];
 }
 
 export const STATIONS: Station[] = [
   // OUTDOOR (Green polygon) — distributed on a 3×2 grid inside the parking
-  { id: "start", name: "START", lng: 12.475917, lat: 43.969999, type: "outdoor", icon: "Play", note: "Race start — 8 × 1 km runs separate the stations (8 km total)." },
-  { id: "st2", name: "2. Sled Push", lng: 12.476118, lat: 43.970078, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
-  { id: "st3", name: "3. Sled Pull", lng: 12.476386, lat: 43.970289, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf" },
-  { id: "st4", name: "4. Burpees", lng: 12.475954, lat: 43.970286, type: "outdoor", icon: "Activity", distance: "80 m broad jumps", surface: "Artificial turf" },
-  { id: "st6", name: "6. Farmers Carry", lng: 12.475652, lat: 43.970117, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt" },
-  { id: "st7", name: "7. Sandbags", lng: 12.476081, lat: 43.970327, type: "outdoor", icon: "Dumbbell", distance: "100 m lunges", surface: "Artificial turf" },
+  { id: "start", name: "START", lng: 12.475917, lat: 43.969999, type: "outdoor", icon: "Play", note: "Race start — 8 × 1 km runs separate the stations (8 km total).", space: "Start corral ~10 × 6 m", equipment: ["Start arch", "Timing mat", "Barriers"] },
+  { id: "st2", name: "2. Sled Push", lng: 12.476118, lat: 43.970078, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf", order: 2, space: "Lane ~12.5 × 2 m", equipment: ["Push sled", "Weight plates", "Turf lane"] },
+  { id: "st3", name: "3. Sled Pull", lng: 12.476386, lat: 43.970289, type: "outdoor", icon: "Dumbbell", distance: "50 m", surface: "Artificial turf", order: 3, space: "Lane ~12.5 × 3 m", equipment: ["Pull sled", "Rope", "Turf lane"] },
+  { id: "st4", name: "4. Burpees", lng: 12.475954, lat: 43.970286, type: "outdoor", icon: "Activity", distance: "80 m broad jumps", surface: "Artificial turf", order: 4, space: "Lane ~20 × 2 m", equipment: ["Lane markers", "Mats"] },
+  { id: "st6", name: "6. Farmers Carry", lng: 12.475652, lat: 43.970117, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt", order: 6, space: "Lane ~25 × 2 m", equipment: ["2× kettlebells (24/32 kg)"] },
+  { id: "st7", name: "7. Sandbags", lng: 12.476081, lat: 43.970327, type: "outdoor", icon: "Dumbbell", distance: "100 m lunges", surface: "Artificial turf", order: 7, space: "Lane ~25 × 2 m", equipment: ["Sandbag (20/30 kg)"] },
 
   // INDOOR (Red polygon) — single file up the arena (entry → finish)
-  { id: "st1", name: "1. SkiErg", lng: 12.475327, lat: 43.970558, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
-  { id: "st5", name: "5. RowErg", lng: 12.4754, lat: 43.970782, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet" },
-  { id: "st8", name: "8. Wall Balls", lng: 12.475473, lat: 43.971006, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet" },
-  { id: "finish", name: "FINISH", lng: 12.475546, lat: 43.971229, type: "indoor", icon: "Flag", note: "Finish line — timing gate and podium." },
+  { id: "st1", name: "1. SkiErg", lng: 12.475327, lat: 43.970558, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet", order: 1, space: "~2 × 1.5 m per lane", equipment: ["SkiErg ergometer", "Floor protection"] },
+  { id: "st5", name: "5. RowErg", lng: 12.4754, lat: 43.970782, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet", order: 5, space: "~2.5 × 1 m per lane", equipment: ["RowErg (Concept2)", "Floor protection"] },
+  { id: "st8", name: "8. Wall Balls", lng: 12.475473, lat: 43.971006, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet", order: 8, space: "~2 × 2 m per station", equipment: ["Wall ball (6/9 kg)", "Target (2.7/3 m)"] },
+  { id: "finish", name: "FINISH", lng: 12.475546, lat: 43.971229, type: "indoor", icon: "Flag", note: "Finish line — timing gate and podium.", space: "Finish lane ~8 × 4 m", equipment: ["Finish arch", "Timing gate", "Podium"] },
+];
+
+/** Order stations are completed in (with a 1 km run before each workout). */
+export const RACE_SEQUENCE: string[] = [
+  "start", "st1", "st2", "st3", "st4", "st5", "st6", "st7", "st8", "finish",
+];
+
+/** Event materials & logistics by area (tents → sports equipment). */
+export const LOGISTICS: { zone: string; items: string[] }[] = [
+  {
+    zone: "Indoor Arena",
+    items: [
+      "Finish arch + timing gates",
+      "SkiErg + RowErg ergometers",
+      "Parquet floor protection",
+      "Roxzone mats & signage",
+      "Scoreboard / LED screens",
+    ],
+  },
+  {
+    zone: "Power Village — tents & gear",
+    items: [
+      "Main marquee (tendone) over the sled area",
+      "Artificial-turf lanes",
+      "Push & pull sleds + weight plates",
+      "Kettlebells & farmers handles",
+      "Sandbags",
+      "Wall-ball targets",
+      "Water / feed tent",
+    ],
+  },
+  {
+    zone: "Athlete services (tents)",
+    items: [
+      "Registration & check-in tent",
+      "Medical / physio tent",
+      "Bag drop & changing rooms",
+      "Warm-up area",
+    ],
+  },
+  {
+    zone: "Course",
+    items: [
+      "Run-route barriers & fencing",
+      "Directional signage",
+      "Lap / km markers",
+      "Marshal points",
+    ],
+  },
 ];
