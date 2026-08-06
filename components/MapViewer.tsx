@@ -305,11 +305,15 @@ function StationPopup({
           ))}
         </ol>
 
-        {/* Specs: surface / space / equipment */}
-        {(station.surface || station.space || station.equipment) && (
+        {/* Specs: surface / space / weight / equipment */}
+        {(station.surface ||
+          station.space ||
+          station.weights ||
+          station.equipment) && (
           <dl className="mt-2 space-y-1 border-t border-white/10 pt-2 text-xs">
             {station.surface && <SpecRow k="Surface" v={station.surface} />}
             {station.space && <SpecRow k="Space" v={station.space} />}
+            {station.weights && <SpecRow k="Weight" v={station.weights} />}
             {station.equipment && (
               <div className="flex gap-2">
                 <dt className="w-[64px] shrink-0 text-white/45">Equipment</dt>
