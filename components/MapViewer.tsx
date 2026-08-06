@@ -20,7 +20,7 @@ import {
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import Sidebar, { type LayerKey, type LayerState } from "./Sidebar";
-import { I18nProvider, useI18n } from "./i18n";
+import { useI18n } from "./i18n";
 import {
   INITIAL_VIEW_STATE,
   MAP_STYLE,
@@ -73,6 +73,7 @@ const DASH_SEQUENCE: number[][] = [
 ];
 
 export default function MapViewer() {
+  const { d } = useI18n();
   const mapRef = useRef<MapRef | null>(null);
   const [layers, setLayers] = useState<LayerState>({
     running: true,
@@ -120,8 +121,7 @@ export default function MapViewer() {
   }
 
   return (
-    <I18nProvider>
-      <div className="relative h-screen w-screen">
+    <div className="relative h-screen w-screen">
       <Map
         ref={mapRef}
         initialViewState={INITIAL_VIEW_STATE}
@@ -209,7 +209,7 @@ export default function MapViewer() {
                     {/* On mobile show only the icon for numbered stations to
                         avoid overlap; Start/Finish always show their label. */}
                     <span className={terminus ? "inline" : "hidden md:inline"}>
-                      {station.name}
+                      {d(station.name)}
                     </span>
                   </div>
                   <div className={`h-2 w-2 -translate-y-1 rotate-45 ${pointer}`} />
@@ -225,8 +225,7 @@ export default function MapViewer() {
       </Map>
 
       <Sidebar layers={layers} onToggle={handleToggle} />
-      </div>
-    </I18nProvider>
+    </div>
   );
 }
 
@@ -258,18 +257,18 @@ function StationPopup({
   if (isStart) {
     steps.push({ value: t("pp.startRace"), strong: true });
     steps.push({ label: t("pp.run"), value: runValue });
-    if (next) steps.push({ label: t("pp.then"), value: next.name });
+    if (next) steps.push({ label: t("pp.then"), value: d(next.name)! });
   } else if (isFinish) {
-    if (prev) steps.push({ label: t("pp.arriveFrom"), value: prev.name });
+    if (prev) steps.push({ label: t("pp.arriveFrom"), value: d(prev.name)! });
     steps.push({ value: t("pp.finish"), strong: true });
   } else {
-    if (prev) steps.push({ label: t("pp.arriveFrom"), value: prev.name });
+    if (prev) steps.push({ label: t("pp.arriveFrom"), value: d(prev.name)! });
     steps.push({ label: t("pp.run"), value: runValue });
     steps.push({
       value: `${t("pp.do")} ${d(station.distance) ?? ""}`.trim(),
       strong: true,
     });
-    if (next) steps.push({ label: t("pp.then"), value: next.name });
+    if (next) steps.push({ label: t("pp.then"), value: d(next.name)! });
   }
 
   return (
@@ -298,7 +297,7 @@ function StationPopup({
             </span>
           )}
         </div>
-        <h3 className="text-sm font-bold text-white">{station.name}</h3>
+        <h3 className="text-sm font-bold text-white">{d(station.name)}</h3>
 
         {/* Step-by-step flow: where you come from, the run, the station, next */}
         <ol className="mt-2 space-y-1 border-l-2 border-white/15 pl-3 text-xs">
