@@ -136,6 +136,17 @@ const UI: Record<Lang, Dict> = {
 
 /** Data-string translations (English value → Italian value). */
 const DATA_IT: Dict = {
+  // station names
+  START: "PARTENZA",
+  "1. SkiErg": "1. SkiErg",
+  "2. Sled Push": "2. Spinta sled",
+  "3. Sled Pull": "3. Traino sled",
+  "4. Burpee Broad Jumps": "4. Burpee con salto",
+  "5. RowErg": "5. Vogatore",
+  "6. Farmers Carry": "6. Trasporto Farmer",
+  "7. Sandbag Lunges": "7. Affondi con sandbag",
+  "8. Wall Balls": "8. Palla al muro",
+  FINISH: "ARRIVO",
   // surfaces
   "Artificial turf": "Erba sintetica",
   "Indoor parquet": "Parquet indoor",
