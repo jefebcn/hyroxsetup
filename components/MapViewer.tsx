@@ -90,7 +90,8 @@ export default function MapViewer() {
     const animate = (t: number) => {
       const map = mapRef.current?.getMap();
       if (map && map.getLayer(RUNNING_LAYER_ID)) {
-        const next = Math.floor(t / 70) % DASH_SEQUENCE.length;
+        // Higher divisor = slower flow.
+        const next = Math.floor(t / 160) % DASH_SEQUENCE.length;
         if (next !== step) {
           step = next;
           try {

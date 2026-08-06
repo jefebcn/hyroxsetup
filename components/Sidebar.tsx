@@ -217,6 +217,57 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
             <LegendItem color={HYROX.turf}>Green volume — power village turf</LegendItem>
           </ul>
         </footer>
+
+        {/* Build & setup — what you need to run/deploy this project */}
+        <details className="mt-4 border-t border-white/10 pt-4">
+          <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-widest text-white/40">
+            🔧 Build &amp; setup
+          </summary>
+          <div className="mt-3 space-y-3 text-xs leading-relaxed text-white/60">
+            <div>
+              <p className="mb-1 font-semibold text-white/70">Prerequisites</p>
+              <ul className="list-disc space-y-0.5 pl-4 text-white/55">
+                <li>Node.js 18+ and npm</li>
+                <li>
+                  A Mapbox account + <span className="text-white/75">public</span>{" "}
+                  token (<code>pk.…</code>)
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="mb-1 font-semibold text-white/70">Environment variable</p>
+              <pre className="overflow-x-auto rounded-lg bg-black/60 p-2 text-[11px] text-white/80">
+                NEXT_PUBLIC_MAPBOX_TOKEN=pk.•••
+              </pre>
+              <p className="mt-1 text-white/45">
+                Put it in <code>.env.local</code> for local dev, and in Vercel →
+                Settings → Environment Variables for production.
+              </p>
+            </div>
+            <div>
+              <p className="mb-1 font-semibold text-white/70">Commands</p>
+              <pre className="overflow-x-auto rounded-lg bg-black/60 p-2 text-[11px] leading-relaxed text-white/80">
+{`npm install
+npm run dev    # http://localhost:3000
+npm run build  # production build`}
+              </pre>
+            </div>
+            <div>
+              <p className="mb-1 font-semibold text-white/70">Key dependencies</p>
+              <p className="text-white/55">
+                next 16 · react 19 · react-map-gl 8 · mapbox-gl 3 · tailwindcss 4
+                · lucide-react
+              </p>
+            </div>
+            <div>
+              <p className="mb-1 font-semibold text-white/70">Deploy</p>
+              <p className="text-white/55">
+                Vercel — framework preset <em>Next.js</em> (pinned in{" "}
+                <code>vercel.json</code>). Add the token env var, then deploy.
+              </p>
+            </div>
+          </div>
+        </details>
       </div>
     </aside>
   );
