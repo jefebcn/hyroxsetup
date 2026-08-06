@@ -20,6 +20,7 @@ import {
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import Sidebar, { type LayerKey, type LayerState } from "./Sidebar";
+import { I18nProvider, useI18n } from "./i18n";
 import {
   INITIAL_VIEW_STATE,
   MAP_STYLE,
@@ -119,7 +120,8 @@ export default function MapViewer() {
   }
 
   return (
-    <div className="relative h-screen w-screen">
+    <I18nProvider>
+      <div className="relative h-screen w-screen">
       <Map
         ref={mapRef}
         initialViewState={INITIAL_VIEW_STATE}
@@ -223,7 +225,8 @@ export default function MapViewer() {
       </Map>
 
       <Sidebar layers={layers} onToggle={handleToggle} />
-    </div>
+      </div>
+    </I18nProvider>
   );
 }
 
@@ -238,6 +241,7 @@ function StationPopup({
   station: Station;
   onClose: () => void;
 }) {
+  const { t, d } = useI18n();
   const idx = RACE_SEQUENCE.indexOf(station.id);
   const prev = idx > 0 ? stationById(RACE_SEQUENCE[idx - 1]) : null;
   const next =
@@ -245,23 +249,27 @@ function StationPopup({
       ? stationById(RACE_SEQUENCE[idx + 1])
       : null;
   const laps = (1000 / RUNNING_LOOP_LENGTH_M).toFixed(1);
+  const runValue = `1 km · ≈ ${laps} ${t("pp.laps")}`;
   const indoor = station.type === "indoor";
   const isStart = station.id === "start";
   const isFinish = station.id === "finish";
 
   const steps: FlowStep[] = [];
   if (isStart) {
-    steps.push({ value: "Start the race", strong: true });
-    steps.push({ label: "Run", value: `1 km · ≈ ${laps} laps` });
-    if (next) steps.push({ label: "Then", value: next.name });
+    steps.push({ value: t("pp.startRace"), strong: true });
+    steps.push({ label: t("pp.run"), value: runValue });
+    if (next) steps.push({ label: t("pp.then"), value: next.name });
   } else if (isFinish) {
-    if (prev) steps.push({ label: "Arrive from", value: prev.name });
-    steps.push({ value: "Finish — race complete", strong: true });
+    if (prev) steps.push({ label: t("pp.arriveFrom"), value: prev.name });
+    steps.push({ value: t("pp.finish"), strong: true });
   } else {
-    if (prev) steps.push({ label: "Arrive from", value: prev.name });
-    steps.push({ label: "Run", value: `1 km · ≈ ${laps} laps` });
-    steps.push({ value: `Do ${station.distance ?? "the station"}`, strong: true });
-    if (next) steps.push({ label: "Then", value: next.name });
+    if (prev) steps.push({ label: t("pp.arriveFrom"), value: prev.name });
+    steps.push({ label: t("pp.run"), value: runValue });
+    steps.push({
+      value: `${t("pp.do")} ${d(station.distance) ?? ""}`.trim(),
+      strong: true,
+    });
+    if (next) steps.push({ label: t("pp.then"), value: next.name });
   }
 
   return (
@@ -282,11 +290,11 @@ function StationPopup({
               indoor ? "bg-red-600/25 text-red-300" : "bg-green-600/25 text-green-300"
             }`}
           >
-            {indoor ? "Indoor" : "Outdoor"}
+            {indoor ? t("pp.indoor") : t("pp.outdoor")}
           </span>
           {station.order != null && (
             <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-              Station {station.order}/8
+              {t("pp.station")} {station.order}/8
             </span>
           )}
         </div>
@@ -311,14 +319,20 @@ function StationPopup({
           station.weights ||
           station.equipment) && (
           <dl className="mt-2 space-y-1 border-t border-white/10 pt-2 text-xs">
-            {station.surface && <SpecRow k="Surface" v={station.surface} />}
-            {station.space && <SpecRow k="Space" v={station.space} />}
-            {station.weights && <SpecRow k="Weight" v={station.weights} />}
+            {station.surface && (
+              <SpecRow k={t("pp.surface")} v={d(station.surface)!} />
+            )}
+            {station.space && <SpecRow k={t("pp.space")} v={d(station.space)!} />}
+            {station.weights && (
+              <SpecRow k={t("pp.weight")} v={d(station.weights)!} />
+            )}
             {station.equipment && (
               <div className="flex gap-2">
-                <dt className="w-[64px] shrink-0 text-white/45">Equipment</dt>
+                <dt className="w-[64px] shrink-0 text-white/45">
+                  {t("pp.equipment")}
+                </dt>
                 <dd className="font-medium text-white/85">
-                  {station.equipment.join(", ")}
+                  {station.equipment.map((e) => d(e)).join(", ")}
                 </dd>
               </div>
             )}
@@ -327,7 +341,7 @@ function StationPopup({
 
         {station.note && station.order == null && (
           <p className="mt-2 border-t border-white/10 pt-2 text-[11px] leading-relaxed text-white/50">
-            {station.note}
+            {d(station.note)}
           </p>
         )}
       </div>
