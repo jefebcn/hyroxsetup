@@ -10,7 +10,13 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { HYROX } from "@/lib/hyrox-data";
+import {
+  HYROX,
+  RUNNING_LOOP_LENGTH_M,
+  RUN_COUNT,
+  STATION_FOOT_M,
+  MACHINE_M,
+} from "@/lib/hyrox-data";
 
 export type LayerKey = "running" | "arena" | "village" | "stations";
 export type LayerState = Record<LayerKey, boolean>;
@@ -204,6 +210,9 @@ export default function Sidebar({ layers, onToggle }: SidebarProps) {
           })}
         </div>
 
+        {/* Race format & distances */}
+        <RaceFormat />
+
         {/* Legend */}
         <footer className="mt-5 border-t border-white/10 pt-4">
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-white/40">
@@ -270,6 +279,61 @@ npm run build  # production build`}
         </details>
       </div>
     </aside>
+  );
+}
+
+function RaceFormat() {
+  const loopKm = (RUNNING_LOOP_LENGTH_M / 1000).toFixed(2);
+  const runTotalKm = ((RUN_COUNT * RUNNING_LOOP_LENGTH_M) / 1000).toFixed(1);
+  const footTotalKm = (
+    (RUN_COUNT * RUNNING_LOOP_LENGTH_M + STATION_FOOT_M) /
+    1000
+  ).toFixed(2);
+
+  return (
+    <section className="mt-5 border-t border-white/10 pt-4">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-white/40">
+        Race format &amp; distances
+      </p>
+      <dl className="space-y-1 text-xs">
+        <MetricRow label="Run loop" value={`${loopKm} km × ${RUN_COUNT}`} />
+        <MetricRow label="Total run" value={`${runTotalKm} km`} highlight />
+        <MetricRow label="Stations (on foot)" value={`${STATION_FOOT_M} m`} />
+        <MetricRow
+          label="Ergometers"
+          value={`${MACHINE_M.toLocaleString("en-US")} m`}
+        />
+        <MetricRow label="Total on foot" value={`${footTotalKm} km`} highlight />
+      </dl>
+      <p className="mt-2 text-[11px] leading-relaxed text-white/40">
+        8 laps of the yellow loop — one before each station: Run → SkiErg → Run →
+        Sled Push → … → Wall Balls → Finish.
+      </p>
+    </section>
+  );
+}
+
+function MetricRow({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <dt className="text-white/50">{label}</dt>
+      <dd
+        className={`font-semibold tabular-nums ${
+          highlight ? "" : "text-white/80"
+        }`}
+        style={highlight ? { color: HYROX.yellow } : undefined}
+      >
+        {value}
+      </dd>
+    </div>
   );
 }
 
