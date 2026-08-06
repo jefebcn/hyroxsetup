@@ -20,9 +20,10 @@ export const VENUE = {
 } as const;
 
 export const INITIAL_VIEW_STATE = {
-  longitude: VENUE.longitude,
-  latitude: VENUE.latitude,
-  zoom: 17.5,
+  // Centered on the 1 km loop so the whole circuit + stations are framed.
+  longitude: 12.4756,
+  latitude: 43.9707,
+  zoom: 16.9,
   pitch: 60,
   bearing: -20,
 } as const;
@@ -119,30 +120,69 @@ export const powerVillageGeoJSON: FeatureCollection<Polygon> = {
 
 // --- Zone 3: Running Loop (exact traced LineString) ------------------------
 
+const RUNNING_LOOP_COORDS: [number, number][] = [
+  [12.47735, 43.970978], [12.477261, 43.971175], [12.477144, 43.971364],
+  [12.477002, 43.971541], [12.476836, 43.971702], [12.476651, 43.971845],
+  [12.476448, 43.971968], [12.476231, 43.972068], [12.476005, 43.972144],
+  [12.475772, 43.972194], [12.475538, 43.972218], [12.475305, 43.972215],
+  [12.475078, 43.972186], [12.474861, 43.97213], [12.474658, 43.972049],
+  [12.474471, 43.971943], [12.474305, 43.971816], [12.474161, 43.971669],
+  [12.474044, 43.971504], [12.473953, 43.971325], [12.473892, 43.971134],
+  [12.473861, 43.970935], [12.47386, 43.970731], [12.47389, 43.970525],
+  [12.47395, 43.970322], [12.474039, 43.970125], [12.474156, 43.969936],
+  [12.474298, 43.969759], [12.474464, 43.969598], [12.474649, 43.969455],
+  [12.474852, 43.969332], [12.475069, 43.969232], [12.475295, 43.969156],
+  [12.475528, 43.969106], [12.475762, 43.969082], [12.475995, 43.969085],
+  [12.476222, 43.969114], [12.476439, 43.96917], [12.476642, 43.969251],
+  [12.476829, 43.969357], [12.476995, 43.969484], [12.477139, 43.969631],
+  [12.477256, 43.969796], [12.477347, 43.969975], [12.477408, 43.970166],
+  [12.477439, 43.970365], [12.47744, 43.970569], [12.47741, 43.970775],
+  [12.47735, 43.970978],
+];
+
 export const runningLoopGeoJSON: FeatureCollection<LineString> = {
   type: "FeatureCollection",
   features: [
     {
       type: "Feature",
-      properties: { name: "1km Running Loop" },
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [12.4763315, 43.9700473],
-          [12.4753715, 43.9696285],
-          [12.4752671, 43.970212],
-          [12.4761972, 43.9705127],
-          [12.4756114, 43.9714844],
-          [12.4746811, 43.9711906],
-          [12.4752128, 43.9702124],
-          [12.4753304, 43.9696268],
-          [12.47629, 43.9700645],
-          [12.47629, 43.9700645],
-        ],
-      },
+      properties: { name: "1 km Running Loop" },
+      geometry: { type: "LineString", coordinates: RUNNING_LOOP_COORDS },
     },
   ],
 };
+
+/** Great-circle length of a lng/lat polyline, in metres. */
+function lineLengthMeters(coords: [number, number][]): number {
+  const R = 6371000;
+  const rad = (d: number) => (d * Math.PI) / 180;
+  let total = 0;
+  for (let i = 1; i < coords.length; i++) {
+    const [lo1, la1] = coords[i - 1];
+    const [lo2, la2] = coords[i];
+    const dLat = rad(la2 - la1);
+    const dLon = rad(lo2 - lo1);
+    const h =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(rad(la1)) * Math.cos(rad(la2)) * Math.sin(dLon / 2) ** 2;
+    total += 2 * R * Math.asin(Math.sqrt(h));
+  }
+  return total;
+}
+
+// --- Race format & distances (HYROX standard) ------------------------------
+
+/** Measured length of one running lap, in metres (≈ 1 km by design). */
+export const RUNNING_LOOP_LENGTH_M = Math.round(lineLengthMeters(RUNNING_LOOP_COORDS));
+
+/** HYROX runs 8 × 1 km laps, one before each workout station. */
+export const RUN_COUNT = 8;
+
+/** On-foot station distances (m): sled push 50 + pull 50 + burpees 80 +
+ *  farmers carry 200 + sandbag lunges 100. (SkiErg/Row are on ergometers.) */
+export const STATION_FOOT_M = 480;
+
+/** Ergometer metres: SkiErg 1,000 + Row 1,000. */
+export const MACHINE_M = 2000;
 
 // --- Layer paint definitions -----------------------------------------------
 
