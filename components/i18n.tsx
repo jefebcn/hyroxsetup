@@ -5,6 +5,8 @@ import {
   useContext,
   useState,
   useMemo,
+  useEffect,
+  useCallback,
   type ReactNode,
 } from "react";
 
@@ -72,6 +74,15 @@ const UI: Record<Lang, Dict> = {
     "pp.space": "Space",
     "pp.weight": "Weight",
     "pp.equipment": "Equipment",
+    "aria.reset": "Reset view",
+    "aria.focus": "Focus zone",
+    loading: "Loading map…",
+    "rf.estTime": "Est. finish",
+    "rf.estTime.v": "~60–90 min",
+    "lg.pins": "Station pins",
+    "lg.mStartFinish": "Black/yellow — Start & Finish",
+    "lg.mIndoor": "Red pin — indoor station",
+    "lg.mOutdoor": "Green pin — outdoor station",
   },
   it: {
     "aria.hide": "Nascondi pannello",
@@ -131,6 +142,15 @@ const UI: Record<Lang, Dict> = {
     "pp.space": "Spazio",
     "pp.weight": "Peso",
     "pp.equipment": "Attrezzatura",
+    "aria.reset": "Reimposta vista",
+    "aria.focus": "Inquadra zona",
+    loading: "Caricamento mappa…",
+    "rf.estTime": "Tempo stimato",
+    "rf.estTime.v": "~60–90 min",
+    "lg.pins": "Pin stazioni",
+    "lg.mStartFinish": "Nero/giallo — Partenza & Arrivo",
+    "lg.mIndoor": "Pin rosso — stazione indoor",
+    "lg.mOutdoor": "Pin verde — stazione outdoor",
   },
 };
 
@@ -248,8 +268,35 @@ const I18nContext = createContext<I18n>({
   d: (s) => s,
 });
 
+const STORAGE_KEY = "hyrox.lang";
+
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("it");
+  const [lang, setLangState] = useState<Lang>("it");
+
+  // Restore the saved language on mount and reflect it on <html lang>.
+  useEffect(() => {
+    let initial: Lang = "it";
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === "it" || stored === "en") initial = stored;
+    } catch {
+      /* localStorage unavailable */
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLangState(initial);
+    document.documentElement.lang = initial;
+  }, []);
+
+  const setLang = useCallback((l: Lang) => {
+    setLangState(l);
+    try {
+      localStorage.setItem(STORAGE_KEY, l);
+    } catch {
+      /* ignore */
+    }
+    if (typeof document !== "undefined") document.documentElement.lang = l;
+  }, []);
+
   const value = useMemo<I18n>(
     () => ({
       lang,
@@ -257,7 +304,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       t: (key) => UI[lang][key] ?? UI.en[key] ?? key,
       d: (s) => (s == null ? s : lang === "it" ? DATA_IT[s] ?? s : s),
     }),
-    [lang],
+    [lang, setLang],
   );
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }

@@ -7,6 +7,8 @@ import Map, {
   Marker,
   Popup,
   NavigationControl,
+  FullscreenControl,
+  ScaleControl,
   type MapRef,
 } from "react-map-gl/mapbox";
 import {
@@ -15,6 +17,8 @@ import {
   Activity,
   Dumbbell,
   Target,
+  RotateCcw,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -72,9 +76,38 @@ const DASH_SEQUENCE: number[][] = [
   [0, 3.5, 3, 0.5],
 ];
 
+type LngLat = [number, number];
+
+/** Bounding box of a set of coordinates → [[W,S],[E,N]]. */
+function boundsOf(coords: LngLat[]): [LngLat, LngLat] {
+  let w = 180,
+    s = 90,
+    e = -180,
+    n = -90;
+  for (const [lng, lat] of coords) {
+    w = Math.min(w, lng);
+    e = Math.max(e, lng);
+    s = Math.min(s, lat);
+    n = Math.max(n, lat);
+  }
+  return [
+    [w, s],
+    [e, n],
+  ];
+}
+
+/** Coordinates that define each zone's extent, for "focus zone". */
+const ZONE_COORDS: Record<LayerKey, LngLat[]> = {
+  running: runningLoopGeoJSON.features[0].geometry.coordinates as LngLat[],
+  arena: indoorArenaGeoJSON.features[0].geometry.coordinates[0] as LngLat[],
+  village: powerVillageGeoJSON.features[0].geometry.coordinates[0] as LngLat[],
+  stations: STATIONS.map((s) => [s.lng, s.lat] as LngLat),
+};
+
 export default function MapViewer() {
-  const { d } = useI18n();
+  const { d, t } = useI18n();
   const mapRef = useRef<MapRef | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [layers, setLayers] = useState<LayerState>({
     running: true,
     arena: true,
@@ -87,8 +120,59 @@ export default function MapViewer() {
     setLayers((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
+  const focusZone = useCallback((key: LayerKey) => {
+    mapRef.current?.fitBounds(boundsOf(ZONE_COORDS[key]), {
+      padding: 90,
+      pitch: 55,
+      bearing: INITIAL_VIEW_STATE.bearing,
+      maxZoom: 18,
+      duration: 1200,
+    });
+  }, []);
+
+  const resetView = useCallback(() => {
+    mapRef.current?.flyTo({
+      center: [INITIAL_VIEW_STATE.longitude, INITIAL_VIEW_STATE.latitude],
+      zoom: INITIAL_VIEW_STATE.zoom,
+      pitch: INITIAL_VIEW_STATE.pitch,
+      bearing: INITIAL_VIEW_STATE.bearing,
+      duration: 1200,
+    });
+  }, []);
+
+  const handleLoad = useCallback(() => {
+    setMapLoaded(true);
+    const map = mapRef.current?.getMap();
+    try {
+      map?.setFog({
+        color: "rgb(12,12,16)",
+        "high-color": "rgb(22,22,34)",
+        "horizon-blend": 0.2,
+        "space-color": "rgb(6,6,10)",
+        "star-intensity": 0.12,
+      });
+    } catch {
+      /* fog unsupported */
+    }
+  }, []);
+
+  // Esc closes the station popup.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelected(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   // Animate the running-loop dash so it "flows" like a stream of athletes.
   useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return; // respect reduced-motion preference
+    }
     let raf = 0;
     let step = -1;
     const animate = (t: number) => {
@@ -132,8 +216,11 @@ export default function MapViewer() {
         antialias
         style={{ width: "100vw", height: "100vh" }}
         onClick={() => setSelected(null)}
+        onLoad={handleLoad}
       >
         <NavigationControl position="bottom-right" visualizePitch />
+        <FullscreenControl position="bottom-right" />
+        <ScaleControl position="bottom-left" />
 
         {/* 3D terrain — the San Marino hill */}
         <Source {...DEM_SOURCE} />
@@ -205,6 +292,13 @@ export default function MapViewer() {
                       active ? "ring-2 ring-white" : ""
                     } ${terminus ? "uppercase tracking-wide" : ""}`}
                   >
+                    {/* Order number stays visible on mobile where the label
+                        is hidden, so the sequence is always readable. */}
+                    {station.order != null && (
+                      <span className="text-[11px] font-black leading-none md:hidden">
+                        {station.order}
+                      </span>
+                    )}
                     <Icon className="h-3.5 w-3.5 shrink-0" />
                     {/* On mobile show only the icon for numbered stations to
                         avoid overlap; Start/Finish always show their label. */}
@@ -224,7 +318,37 @@ export default function MapViewer() {
         )}
       </Map>
 
-      <Sidebar layers={layers} onToggle={handleToggle} />
+      {/* Reset-view control */}
+      <button
+        type="button"
+        onClick={resetView}
+        aria-label={t("aria.reset")}
+        title={t("aria.reset")}
+        className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center
+                   rounded-lg border border-white/10 bg-black/60 text-white/80 shadow-lg
+                   backdrop-blur-md transition-colors hover:bg-black/70"
+      >
+        <RotateCcw className="h-5 w-5" />
+      </button>
+
+      <Sidebar
+        layers={layers}
+        onToggle={handleToggle}
+        onFocusZone={focusZone}
+      />
+
+      {/* Loading overlay until the map is ready */}
+      {!mapLoaded && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black">
+          <div className="flex items-center gap-3 text-white/70">
+            <Loader2
+              className="h-5 w-5 animate-spin"
+              style={{ color: HYROX.yellow }}
+            />
+            <span className="text-sm">{t("loading")}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
