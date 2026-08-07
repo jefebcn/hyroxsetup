@@ -185,6 +185,9 @@ export const STATION_FOOT_M = 480;
 /** Ergometer metres: SkiErg 1,000 + Row 1,000. */
 export const MACHINE_M = 2000;
 
+/** Rough estimated time for one 1 km run leg (mid-pack athlete). */
+export const RUN_LEG_TIME = "~5:30";
+
 // --- Layer paint definitions -----------------------------------------------
 
 export const runningLoopLayer: LayerProps = {
@@ -269,6 +272,8 @@ export interface Station {
   space?: string;
   /** Official loads by division (Women / Men / Pro). */
   weights?: string;
+  /** Rough estimated station time (mid-pack athlete). */
+  time?: string;
   /** Equipment & materials required at the station. */
   equipment?: string[];
 }
@@ -276,16 +281,16 @@ export interface Station {
 export const STATIONS: Station[] = [
   // OUTDOOR (Green polygon) — distributed on a 3×2 grid inside the parking
   { id: "start", name: "START", lng: 12.475917, lat: 43.969999, type: "outdoor", icon: "Play", note: "Race start — 8 × 1 km runs separate the stations (8 km total).", space: "Start corral ~10 × 6 m", equipment: ["Start arch", "Timing mat", "Barriers"] },
-  { id: "st2", name: "2. Sled Push", lng: 12.476118, lat: 43.970078, type: "outdoor", icon: "Dumbbell", distance: "50 m (4 × 12.5 m)", surface: "Artificial turf", order: 2, space: "Lane ~15 × 2.5 m", weights: "W 102 · M 152 · Pro W 152 / M 202 kg (incl. sled)", equipment: ["HYROX push sled", "Weight plates", "Turf lane"] },
-  { id: "st3", name: "3. Sled Pull", lng: 12.476386, lat: 43.970289, type: "outdoor", icon: "Dumbbell", distance: "50 m (4 × 12.5 m)", surface: "Artificial turf", order: 3, space: "12.5 m pull + rope zone, ~3 m wide", weights: "W 78 · M 103 · Pro W 103 / M 153 kg (incl. sled)", equipment: ["HYROX pull sled", "Rope", "Turf lane"] },
-  { id: "st4", name: "4. Burpee Broad Jumps", lng: 12.475954, lat: 43.970286, type: "outdoor", icon: "Activity", distance: "80 m", surface: "Artificial turf", order: 4, space: "Lane ~20 × 2 m", weights: "Bodyweight", equipment: ["Lane markers", "Mats"] },
-  { id: "st6", name: "6. Farmers Carry", lng: 12.475652, lat: 43.970117, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt", order: 6, space: "Lane ~25 × 2 m (turns)", weights: "2× — W 16 · M 24 · Pro W 24 / M 32 kg", equipment: ["2× kettlebells"] },
-  { id: "st7", name: "7. Sandbag Lunges", lng: 12.476081, lat: 43.970327, type: "outdoor", icon: "Dumbbell", distance: "100 m", surface: "Artificial turf", order: 7, space: "Lane ~25 × 2 m", weights: "W 10 · M 20 · Pro W 20 / M 30 kg", equipment: ["Sandbag"] },
+  { id: "st2", name: "2. Sled Push", lng: 12.476118, lat: 43.970078, type: "outdoor", icon: "Dumbbell", distance: "50 m (4 × 12.5 m)", surface: "Artificial turf", order: 2, space: "Lane ~15 × 2.5 m", weights: "W 102 · M 152 · Pro W 152 / M 202 kg (incl. sled)", time: "~1:30", equipment: ["HYROX push sled", "Weight plates", "Turf lane"] },
+  { id: "st3", name: "3. Sled Pull", lng: 12.476386, lat: 43.970289, type: "outdoor", icon: "Dumbbell", distance: "50 m (4 × 12.5 m)", surface: "Artificial turf", order: 3, space: "12.5 m pull + rope zone, ~3 m wide", weights: "W 78 · M 103 · Pro W 103 / M 153 kg (incl. sled)", time: "~2:00", equipment: ["HYROX pull sled", "Rope", "Turf lane"] },
+  { id: "st4", name: "4. Burpee Broad Jumps", lng: 12.475954, lat: 43.970286, type: "outdoor", icon: "Activity", distance: "80 m", surface: "Artificial turf", order: 4, space: "Lane ~20 × 2 m", weights: "Bodyweight", time: "~3:00", equipment: ["Lane markers", "Mats"] },
+  { id: "st6", name: "6. Farmers Carry", lng: 12.475652, lat: 43.970117, type: "outdoor", icon: "Dumbbell", distance: "200 m", surface: "Flat asphalt", order: 6, space: "Lane ~25 × 2 m (turns)", weights: "2× — W 16 · M 24 · Pro W 24 / M 32 kg", time: "~2:00", equipment: ["2× kettlebells"] },
+  { id: "st7", name: "7. Sandbag Lunges", lng: 12.476081, lat: 43.970327, type: "outdoor", icon: "Dumbbell", distance: "100 m", surface: "Artificial turf", order: 7, space: "Lane ~25 × 2 m", weights: "W 10 · M 20 · Pro W 20 / M 30 kg", time: "~3:30", equipment: ["Sandbag"] },
 
   // INDOOR (Red polygon) — single file up the arena (entry → finish)
-  { id: "st1", name: "1. SkiErg", lng: 12.475327, lat: 43.970558, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet", order: 1, space: "~2 × 1.5 m per lane", weights: "No load (ergometer)", equipment: ["Concept2 SkiErg", "Floor protection"] },
-  { id: "st5", name: "5. RowErg", lng: 12.4754, lat: 43.970782, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet", order: 5, space: "~2.5 × 1 m per lane", weights: "No load (ergometer)", equipment: ["Concept2 RowErg", "Floor protection"] },
-  { id: "st8", name: "8. Wall Balls", lng: 12.475473, lat: 43.971006, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet", order: 8, space: "~2 × 2 m per station", weights: "W 4 · M 6 · Pro W 6 / M 9 kg · target ~2.7–3 m", equipment: ["Wall ball", "Target"] },
+  { id: "st1", name: "1. SkiErg", lng: 12.475327, lat: 43.970558, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet", order: 1, space: "~2 × 1.5 m per lane", weights: "No load (ergometer)", time: "~4:15", equipment: ["Concept2 SkiErg", "Floor protection"] },
+  { id: "st5", name: "5. RowErg", lng: 12.4754, lat: 43.970782, type: "indoor", icon: "Activity", distance: "1,000 m", surface: "Indoor parquet", order: 5, space: "~2.5 × 1 m per lane", weights: "No load (ergometer)", time: "~4:00", equipment: ["Concept2 RowErg", "Floor protection"] },
+  { id: "st8", name: "8. Wall Balls", lng: 12.475473, lat: 43.971006, type: "indoor", icon: "Target", distance: "100 reps", surface: "Indoor parquet", order: 8, space: "~2 × 2 m per station", weights: "W 4 · M 6 · Pro W 6 / M 9 kg · target ~2.7–3 m", time: "~5:00", equipment: ["Wall ball", "Target"] },
   { id: "finish", name: "FINISH", lng: 12.475546, lat: 43.971229, type: "indoor", icon: "Flag", note: "Finish line — timing gate and podium.", space: "Finish lane ~8 × 4 m", equipment: ["Finish arch", "Timing gate", "Podium"] },
 ];
 

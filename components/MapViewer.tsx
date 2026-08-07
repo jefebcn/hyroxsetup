@@ -44,6 +44,9 @@ import {
   STATIONS,
   RACE_SEQUENCE,
   RUNNING_LOOP_LENGTH_M,
+  RUN_TARGET_M,
+  STATION_FOOT_M,
+  MACHINE_M,
   type Station,
   type StationIcon,
 } from "@/lib/hyrox-data";
@@ -217,15 +220,82 @@ export default function MapViewer() {
         return;
       }
       const { jsPDF } = await import("jspdf");
-      const pdf = new jsPDF({
-        orientation: w >= h ? "landscape" : "portrait",
-        unit: "px",
-        format: [w, h],
-      });
+      const orientation = w >= h ? "landscape" : "portrait";
+      const pdf = new jsPDF({ orientation, unit: "px", format: [w, h] });
       pdf.addImage(dataURL, "PNG", 0, 0, w, h);
+
+      // Page 2 — event plan: race summary + station specs.
+      pdf.addPage([w, h], orientation);
+      const S = w / 1400;
+      const L = 50 * S;
+      let y = 64 * S;
+      pdf.setTextColor(18, 18, 22);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(28 * S);
+      pdf.text("HYROX San Marino", L, y);
+      y += 30 * S;
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(13 * S);
+      pdf.setTextColor(90, 90, 100);
+      pdf.text(`Multieventi Sport Domus · San Marino — ${t("pdf.plan")}`, L, y);
+      y += 40 * S;
+
+      pdf.setTextColor(18, 18, 22);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(15 * S);
+      pdf.text(t("pdf.summary"), L, y);
+      y += 24 * S;
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(12 * S);
+      const lapM = RUNNING_LOOP_LENGTH_M;
+      const summary = [
+        `${t("rf.lap")}: ${lapM} m`,
+        `${t("rf.runTarget")}: ${(RUN_TARGET_M / 1000).toFixed(1)} km   ·   ${t("rf.laps")}: ≈ ${(RUN_TARGET_M / lapM).toFixed(1)}`,
+        `${t("rf.stationsFoot")}: ${STATION_FOOT_M} m   ·   ${t("rf.ergo")}: ${MACHINE_M} m`,
+        `${t("rf.totalFoot")}: ${((RUN_TARGET_M + STATION_FOOT_M) / 1000).toFixed(2)} km   ·   ${t("pdf.total")}: ${t("rf.estTime.v")}`,
+      ];
+      for (const line of summary) {
+        pdf.text(line, L, y);
+        y += 19 * S;
+      }
+      y += 22 * S;
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(15 * S);
+      pdf.setTextColor(18, 18, 22);
+      pdf.text(t("pdf.stations"), L, y);
+      y += 26 * S;
+
+      const workout = STATIONS.filter((s) => s.order != null).sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0),
+      );
+      for (const s of workout) {
+        if (y > h - 60 * S) {
+          pdf.addPage([w, h], orientation);
+          y = 64 * S;
+        }
+        pdf.setTextColor(18, 18, 22);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(12.5 * S);
+        pdf.text(`${d(s.name)}  —  ${d(s.distance) ?? ""}`, L, y);
+        if (s.time) {
+          pdf.setTextColor(180, 120, 0);
+          pdf.text(s.time, w - L, y, { align: "right" });
+        }
+        y += 17 * S;
+        pdf.setTextColor(95, 95, 105);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10.5 * S);
+        const specs = [d(s.weights), d(s.space)]
+          .filter(Boolean)
+          .join("   ·   ");
+        if (specs) pdf.text(specs, L, y);
+        y += 23 * S;
+      }
+
       pdf.save("hyrox-san-marino.pdf");
     },
-    [layers.stations],
+    [layers.stations, t, d],
   );
 
   const handleLoad = useCallback(() => {
@@ -606,10 +676,11 @@ function StationPopup({
           ))}
         </ol>
 
-        {/* Specs: surface / space / weight / equipment */}
+        {/* Specs: surface / space / weight / time / equipment */}
         {(station.surface ||
           station.space ||
           station.weights ||
+          station.time ||
           station.equipment) && (
           <dl className="mt-2 space-y-1 border-t border-white/10 pt-2 text-xs">
             {station.surface && (
@@ -619,6 +690,7 @@ function StationPopup({
             {station.weights && (
               <SpecRow k={t("pp.weight")} v={d(station.weights)!} />
             )}
+            {station.time && <SpecRow k={t("pp.time")} v={station.time} />}
             {station.equipment && (
               <div className="flex gap-2">
                 <dt className="w-[64px] shrink-0 text-white/45">
