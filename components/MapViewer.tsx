@@ -112,7 +112,22 @@ const ZONE_COORDS: Record<LayerKey, LngLat[]> = {
 export default function MapViewer() {
   const { d, t } = useI18n();
   const mapRef = useRef<MapRef | null>(null);
+  const jsPDFRef = useRef<typeof import("jspdf").jsPDF | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Pre-load jsPDF (client-only) so the export can run synchronously inside the
+  // click gesture — an await before the download would let the browser block it.
+  useEffect(() => {
+    let alive = true;
+    import("jspdf")
+      .then((m) => {
+        if (alive) jsPDFRef.current = m.jsPDF ?? m.default;
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
   const [layers, setLayers] = useState<LayerState>({
     running: true,
     arena: true,
@@ -220,8 +235,13 @@ export default function MapViewer() {
         a.click();
         return;
       }
-      const jspdf = await import("jspdf");
-      const JsPDF = jspdf.jsPDF ?? jspdf.default;
+      // Use the pre-loaded constructor when available (keeps the download inside
+      // the click gesture); only await as a rare fallback.
+      let JsPDF = jsPDFRef.current;
+      if (!JsPDF) {
+        const jspdf = await import("jspdf");
+        JsPDF = jspdf.jsPDF ?? jspdf.default;
+      }
       // A4 landscape in points — robust page geometry.
       const pdf = new JsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
       const pageW = pdf.internal.pageSize.getWidth();
@@ -322,7 +342,16 @@ export default function MapViewer() {
         y += 18;
       }
 
-      pdf.save("hyrox-san-marino.pdf");
+      // Download via blob + link (more reliable across browsers than save()).
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "hyrox-san-marino.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
       } catch (err) {
         console.error("Export failed", err);
       }
