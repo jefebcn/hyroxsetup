@@ -83,6 +83,11 @@ const UI: Record<Lang, Dict> = {
     "lg.mStartFinish": "Black/yellow — Start & Finish",
     "lg.mIndoor": "Red pin — indoor station",
     "lg.mOutdoor": "Green pin — outdoor station",
+    "aria.export": "Export",
+    "export.png": "PNG image",
+    "export.pdf": "PDF",
+    "aria.tourPlay": "Play sequence",
+    "aria.tourPause": "Pause sequence",
   },
   it: {
     "aria.hide": "Nascondi pannello",
@@ -151,6 +156,11 @@ const UI: Record<Lang, Dict> = {
     "lg.mStartFinish": "Nero/giallo — Partenza & Arrivo",
     "lg.mIndoor": "Pin rosso — stazione indoor",
     "lg.mOutdoor": "Pin verde — stazione outdoor",
+    "aria.export": "Esporta",
+    "export.png": "Immagine PNG",
+    "export.pdf": "PDF",
+    "aria.tourPlay": "Avvia sequenza",
+    "aria.tourPause": "Ferma sequenza",
   },
 };
 
