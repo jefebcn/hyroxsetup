@@ -13,12 +13,14 @@ import Map, {
 } from "react-map-gl/mapbox";
 import {
   Play,
+  Pause,
   Flag,
   Activity,
   Dumbbell,
   Target,
   RotateCcw,
   Loader2,
+  Download,
   type LucideIcon,
 } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -115,6 +117,9 @@ export default function MapViewer() {
     stations: true,
   });
   const [selected, setSelected] = useState<Station | null>(null);
+  const [tourOn, setTourOn] = useState(true);
+  const [activeStep, setActiveStep] = useState(-1);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handleToggle = useCallback((key: LayerKey) => {
     setLayers((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -140,6 +145,89 @@ export default function MapViewer() {
     });
   }, []);
 
+  const exportImage = useCallback(
+    async (format: "png" | "pdf") => {
+      setExportOpen(false);
+      const map = mapRef.current?.getMap();
+      if (!map) return;
+      const src = map.getCanvas();
+      const w = src.width;
+      const h = src.height;
+      const dpr = src.clientWidth ? src.width / src.clientWidth : 1;
+
+      const out = document.createElement("canvas");
+      out.width = w;
+      out.height = h;
+      const ctx = out.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(src, 0, 0);
+
+      // Draw the station pins (HTML markers aren't on the WebGL canvas).
+      if (layers.stations) {
+        for (const s of STATIONS) {
+          const p = map.project([s.lng, s.lat]);
+          const x = p.x * dpr;
+          const y = p.y * dpr;
+          const terminus = s.id === "start" || s.id === "finish";
+          const fill = terminus
+            ? "#0a0a0a"
+            : s.type === "indoor"
+              ? "#dc2626"
+              : "#16a34a";
+          ctx.beginPath();
+          ctx.arc(x, y, 15 * dpr, 0, Math.PI * 2);
+          ctx.fillStyle = fill;
+          ctx.fill();
+          ctx.lineWidth = 2.5 * dpr;
+          ctx.strokeStyle = terminus ? "#fbc02d" : "rgba(0,0,0,0.45)";
+          ctx.stroke();
+          ctx.fillStyle = terminus
+            ? "#fbc02d"
+            : s.type === "indoor"
+              ? "#fde047"
+              : "#ffffff";
+          ctx.font = `bold ${15 * dpr}px sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          const label =
+            s.order != null ? String(s.order) : s.id === "start" ? "S" : "F";
+          ctx.fillText(label, x, y);
+        }
+      }
+
+      // Title footer bar.
+      const bar = 42 * dpr;
+      ctx.fillStyle = "rgba(10,10,10,0.78)";
+      ctx.fillRect(0, h - bar, w, bar);
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#fbc02d";
+      ctx.font = `bold ${17 * dpr}px sans-serif`;
+      ctx.fillText("HYROX San Marino", 16 * dpr, h - bar / 2);
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.font = `${13 * dpr}px sans-serif`;
+      ctx.fillText("Multieventi Sport Domus", 200 * dpr, h - bar / 2);
+
+      const dataURL = out.toDataURL("image/png");
+      if (format === "png") {
+        const a = document.createElement("a");
+        a.href = dataURL;
+        a.download = "hyrox-san-marino.png";
+        a.click();
+        return;
+      }
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({
+        orientation: w >= h ? "landscape" : "portrait",
+        unit: "px",
+        format: [w, h],
+      });
+      pdf.addImage(dataURL, "PNG", 0, 0, w, h);
+      pdf.save("hyrox-san-marino.pdf");
+    },
+    [layers.stations],
+  );
+
   const handleLoad = useCallback(() => {
     setMapLoaded(true);
     const map = mapRef.current?.getMap();
@@ -164,6 +252,30 @@ export default function MapViewer() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // Animated route numbering: a highlight travels the sequence Start → 1 … 8 → Finish.
+  useEffect(() => {
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!tourOn || reduced) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveStep(-1);
+      return;
+    }
+    let raf = 0;
+    let cur = -1;
+    const tick = (time: number) => {
+      const idx = Math.floor(time / 1100) % RACE_SEQUENCE.length;
+      if (idx !== cur) {
+        cur = idx;
+        setActiveStep(idx);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [tourOn]);
 
   // Animate the running-loop dash so it "flows" like a stream of athletes.
   useEffect(() => {
@@ -214,6 +326,7 @@ export default function MapViewer() {
         terrain={TERRAIN}
         maxPitch={85}
         antialias
+        preserveDrawingBuffer
         style={{ width: "100vw", height: "100vh" }}
         onClick={() => setSelected(null)}
         onLoad={handleLoad}
@@ -259,6 +372,8 @@ export default function MapViewer() {
             const terminus = station.id === "start" || station.id === "finish";
             const indoor = station.type === "indoor";
             const active = selected?.id === station.id;
+            const isTourActive =
+              activeStep >= 0 && RACE_SEQUENCE[activeStep] === station.id;
 
             const pill = terminus
               ? "bg-black text-yellow-400 ring-yellow-400/70"
@@ -288,9 +403,13 @@ export default function MapViewer() {
                   className="flex cursor-pointer flex-col items-center transition-transform hover:scale-110"
                 >
                   <div
-                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-1 text-xs font-bold shadow-lg ring-1 ${pill} ${
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-1 text-xs font-bold shadow-lg ring-1 transition-transform ${pill} ${
                       active ? "ring-2 ring-white" : ""
-                    } ${terminus ? "uppercase tracking-wide" : ""}`}
+                    } ${terminus ? "uppercase tracking-wide" : ""} ${
+                      isTourActive
+                        ? "scale-110 animate-[hyrox-pulse_1.1s_ease-in-out_infinite]"
+                        : ""
+                    }`}
                   >
                     {/* Order number stays visible on mobile where the label
                         is hidden, so the sequence is always readable. */}
@@ -318,18 +437,69 @@ export default function MapViewer() {
         )}
       </Map>
 
-      {/* Reset-view control */}
-      <button
-        type="button"
-        onClick={resetView}
-        aria-label={t("aria.reset")}
-        title={t("aria.reset")}
-        className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center
-                   rounded-lg border border-white/10 bg-black/60 text-white/80 shadow-lg
-                   backdrop-blur-md transition-colors hover:bg-black/70"
-      >
-        <RotateCcw className="h-5 w-5" />
-      </button>
+      {/* Map controls: reset · animated sequence · export */}
+      <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-2">
+        <button
+          type="button"
+          onClick={resetView}
+          aria-label={t("aria.reset")}
+          title={t("aria.reset")}
+          className="flex h-10 w-10 items-center justify-center rounded-lg border
+                     border-white/10 bg-black/60 text-white/80 shadow-lg backdrop-blur-md
+                     transition-colors hover:bg-black/70"
+        >
+          <RotateCcw className="h-5 w-5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTourOn((v) => !v)}
+          aria-label={t(tourOn ? "aria.tourPause" : "aria.tourPlay")}
+          title={t(tourOn ? "aria.tourPause" : "aria.tourPlay")}
+          className="flex h-10 w-10 items-center justify-center rounded-lg border shadow-lg
+                     backdrop-blur-md transition-colors"
+          style={{
+            backgroundColor: tourOn ? `${HYROX.yellow}` : "rgba(10,10,10,0.6)",
+            borderColor: tourOn ? HYROX.yellow : "rgba(255,255,255,0.1)",
+            color: tourOn ? "#0a0a0a" : "rgba(255,255,255,0.8)",
+          }}
+        >
+          {tourOn ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+        </button>
+
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setExportOpen((o) => !o)}
+            aria-label={t("aria.export")}
+            title={t("aria.export")}
+            aria-expanded={exportOpen}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border
+                       border-white/10 bg-black/60 text-white/80 shadow-lg backdrop-blur-md
+                       transition-colors hover:bg-black/70"
+          >
+            <Download className="h-5 w-5" />
+          </button>
+          {exportOpen && (
+            <div className="absolute right-0 top-full mt-2 flex w-36 flex-col overflow-hidden rounded-lg border border-white/10 bg-black/80 shadow-xl backdrop-blur-md">
+              <button
+                type="button"
+                onClick={() => exportImage("png")}
+                className="px-3 py-2 text-left text-xs text-white/80 transition-colors hover:bg-white/10"
+              >
+                {t("export.png")}
+              </button>
+              <button
+                type="button"
+                onClick={() => exportImage("pdf")}
+                className="border-t border-white/10 px-3 py-2 text-left text-xs text-white/80 transition-colors hover:bg-white/10"
+              >
+                {t("export.pdf")}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       <Sidebar
         layers={layers}
