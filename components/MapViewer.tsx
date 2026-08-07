@@ -151,6 +151,7 @@ export default function MapViewer() {
   const exportImage = useCallback(
     async (format: "png" | "pdf") => {
       setExportOpen(false);
+      try {
       const map = mapRef.current?.getMap();
       if (!map) return;
       const src = map.getCanvas();
@@ -219,34 +220,62 @@ export default function MapViewer() {
         a.click();
         return;
       }
-      const { jsPDF } = await import("jspdf");
-      const orientation = w >= h ? "landscape" : "portrait";
-      const pdf = new jsPDF({ orientation, unit: "px", format: [w, h] });
-      pdf.addImage(dataURL, "PNG", 0, 0, w, h);
+      const jspdf = await import("jspdf");
+      const JsPDF = jspdf.jsPDF ?? jspdf.default;
+      // A4 landscape in points — robust page geometry.
+      const pdf = new JsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const M = 28;
+
+      // Page 1 — title + fitted map image.
+      pdf.setTextColor(18, 18, 22);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(16);
+      pdf.text("HYROX San Marino", M, M + 4);
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(9);
+      pdf.setTextColor(110, 110, 120);
+      pdf.text(`Multieventi Sport Domus · San Marino — ${t("pdf.plan")}`, M, M + 18);
+
+      const availW = pageW - M * 2;
+      const availH = pageH - (M + 28) - M;
+      const scale = Math.min(availW / w, availH / h);
+      const iw = w * scale;
+      const ih = h * scale;
+      pdf.addImage(
+        dataURL,
+        "PNG",
+        (pageW - iw) / 2,
+        M + 28,
+        iw,
+        ih,
+        undefined,
+        "FAST",
+      );
 
       // Page 2 — event plan: race summary + station specs.
-      pdf.addPage([w, h], orientation);
-      const S = w / 1400;
-      const L = 50 * S;
-      let y = 64 * S;
+      pdf.addPage("a4", "landscape");
+      let y = M + 6;
       pdf.setTextColor(18, 18, 22);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(28 * S);
-      pdf.text("HYROX San Marino", L, y);
-      y += 30 * S;
+      pdf.setFontSize(20);
+      pdf.text("HYROX San Marino", M, y);
+      y += 18;
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(13 * S);
-      pdf.setTextColor(90, 90, 100);
-      pdf.text(`Multieventi Sport Domus · San Marino — ${t("pdf.plan")}`, L, y);
-      y += 40 * S;
+      pdf.setFontSize(10);
+      pdf.setTextColor(110, 110, 120);
+      pdf.text(`Multieventi Sport Domus · San Marino — ${t("pdf.plan")}`, M, y);
+      y += 26;
 
       pdf.setTextColor(18, 18, 22);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(15 * S);
-      pdf.text(t("pdf.summary"), L, y);
-      y += 24 * S;
+      pdf.setFontSize(13);
+      pdf.text(t("pdf.summary"), M, y);
+      y += 16;
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(12 * S);
+      pdf.setFontSize(10.5);
+      pdf.setTextColor(55, 55, 65);
       const lapM = RUNNING_LOOP_LENGTH_M;
       const summary = [
         `${t("rf.lap")}: ${lapM} m`,
@@ -255,45 +284,48 @@ export default function MapViewer() {
         `${t("rf.totalFoot")}: ${((RUN_TARGET_M + STATION_FOOT_M) / 1000).toFixed(2)} km   ·   ${t("pdf.total")}: ${t("rf.estTime.v")}`,
       ];
       for (const line of summary) {
-        pdf.text(line, L, y);
-        y += 19 * S;
+        pdf.text(line, M, y);
+        y += 14;
       }
-      y += 22 * S;
+      y += 12;
 
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(15 * S);
+      pdf.setFontSize(13);
       pdf.setTextColor(18, 18, 22);
-      pdf.text(t("pdf.stations"), L, y);
-      y += 26 * S;
+      pdf.text(t("pdf.stations"), M, y);
+      y += 16;
 
       const workout = STATIONS.filter((s) => s.order != null).sort(
         (a, b) => (a.order ?? 0) - (b.order ?? 0),
       );
       for (const s of workout) {
-        if (y > h - 60 * S) {
-          pdf.addPage([w, h], orientation);
-          y = 64 * S;
+        if (y > pageH - M) {
+          pdf.addPage("a4", "landscape");
+          y = M + 6;
         }
         pdf.setTextColor(18, 18, 22);
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(12.5 * S);
-        pdf.text(`${d(s.name)}  —  ${d(s.distance) ?? ""}`, L, y);
+        pdf.setFontSize(11);
+        pdf.text(`${d(s.name)}  —  ${d(s.distance) ?? ""}`, M, y);
         if (s.time) {
           pdf.setTextColor(180, 120, 0);
-          pdf.text(s.time, w - L, y, { align: "right" });
+          pdf.text(s.time, pageW - M, y, { align: "right" });
         }
-        y += 17 * S;
-        pdf.setTextColor(95, 95, 105);
+        y += 12;
+        pdf.setTextColor(90, 90, 100);
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(10.5 * S);
+        pdf.setFontSize(9);
         const specs = [d(s.weights), d(s.space)]
           .filter(Boolean)
           .join("   ·   ");
-        if (specs) pdf.text(specs, L, y);
-        y += 23 * S;
+        if (specs) pdf.text(specs, M, y);
+        y += 18;
       }
 
       pdf.save("hyrox-san-marino.pdf");
+      } catch (err) {
+        console.error("Export failed", err);
+      }
     },
     [layers.stations, t, d],
   );
