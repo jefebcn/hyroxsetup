@@ -1,5 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import { Chakra_Petch, Inter } from "next/font/google";
 import "./globals.css";
+
+const display = Chakra_Petch({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
+const body = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
 import { CartProvider } from "@/lib/cart-context";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -41,7 +55,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body className="flex min-h-screen flex-col">
         <CartProvider>
           <Header />

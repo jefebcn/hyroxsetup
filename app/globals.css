@@ -1,130 +1,234 @@
 @import "tailwindcss";
 
-/* ---- WALL BUY theme tokens (Zombies: black · blood red · neon white) ---- */
+/* ============================================================
+   WALL BUY — design system
+   Theme: deep black · blood red · Pack-a-Punch gold · neon
+   ============================================================ */
 @theme {
-  --color-ink: #0a0a0b;
-  --color-panel: #111114;
-  --color-elevated: #17171b;
-  --color-line: #262630;
-  --color-blood: #d21f24;
-  --color-blood-bright: #ef3b40;
-  --color-bone: #ededf0;
-  --color-ash: #9a9aa3;
-  --font-display: "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --color-ink: #070708;
+  --color-panel: #0d0d11;
+  --color-elevated: #16161c;
+  --color-line: #24242e;
+  --color-blood: #e11d24;
+  --color-blood-bright: #ff3b40;
+  --color-gold: #f0b429;
+  --color-bone: #f5f5f7;
+  --color-ash: #8e8e99;
+  --font-display: "Chakra Petch", "Oswald", system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   color-scheme: dark;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #0a0a0b;
-  color: #ededf0;
-  font-family:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  background-color: #070708;
+  color: #f5f5f7;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Condensed, uppercase military/gamer display styling. */
+::selection {
+  background: rgba(225, 29, 36, 0.35);
+  color: #fff;
+}
+
+/* ---- Typography ---- */
 .display {
   font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   line-height: 0.95;
 }
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-blood-bright);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.eyebrow::before {
+  content: "";
+  width: 1.6rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-blood));
+}
+.text-grad {
+  background: linear-gradient(180deg, #ffffff 0%, #b9b9c2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
-/* Neon glow for weapon outlines / accents. */
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 0.65rem;
+  padding: 0.95rem 1.6rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  will-change: transform;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(180deg, #ff2a30 0%, #c81419 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 90, 94, 0.35) inset,
+    0 10px 30px -10px rgba(225, 29, 36, 0.7);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(255, 120, 124, 0.5) inset,
+    0 16px 40px -12px rgba(225, 29, 36, 0.9);
+}
+.btn-ghost {
+  color: var(--color-bone);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-line);
+}
+.btn-ghost:hover {
+  border-color: rgba(225, 29, 36, 0.6);
+  background: rgba(225, 29, 36, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ---- Cards & surfaces ---- */
+.card {
+  background: linear-gradient(180deg, #101014 0%, #0b0b0e 100%);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+}
+.pill-gold {
+  color: var(--color-gold);
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  background: rgba(240, 180, 41, 0.08);
+}
+
+/* ---- Neon / glow ---- */
 .neon-white {
   text-shadow:
     0 0 6px rgba(255, 255, 255, 0.9),
-    0 0 18px rgba(255, 255, 255, 0.55);
+    0 0 18px rgba(255, 255, 255, 0.5);
 }
 .neon-red {
   text-shadow:
-    0 0 8px rgba(239, 59, 64, 0.9),
-    0 0 22px rgba(210, 31, 36, 0.55);
+    0 0 10px rgba(255, 59, 64, 0.9),
+    0 0 26px rgba(225, 29, 36, 0.6);
+}
+.glow-red {
+  box-shadow: 0 0 60px -12px rgba(225, 29, 36, 0.55);
 }
 
-/* Faint blueprint grid used behind hero / sections. */
+/* ---- Backgrounds ---- */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 44px 44px;
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 52px 52px;
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, black, transparent 78%);
+  mask-image: radial-gradient(circle at 50% 40%, black, transparent 78%);
+}
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.035;
+}
+.hairline-glow {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(225, 29, 36, 0.6),
+    transparent
+  );
 }
 
+/* ---- Animations ---- */
 @keyframes wb-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-  20%, 24%, 55% { opacity: 0.55; }
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.5; }
 }
-.flicker {
-  animation: wb-flicker 4.5s infinite;
-}
-
-@keyframes wb-fill {
-  from { width: 0%; }
-  to { width: 100%; }
-}
+.flicker { animation: wb-flicker 5s infinite; }
 
 @keyframes wb-up {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.rise {
-  animation: wb-up 0.5s ease-out both;
+.rise { animation: wb-up 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes wb-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: wb-marquee 28s linear infinite;
+}
+
+@keyframes wb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: wb-float 6s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .flicker,
-  .rise {
-    animation: none;
-  }
+  .flicker, .rise, .marquee-track, .float { animation: none; }
+  html { scroll-behavior: auto; }
 }
 
-/* Legal / long-form typography. */
+/* ---- Legal / long-form typography ---- */
 .legal h2 {
-  color: #ededf0;
+  color: #f5f5f7;
+  font-family: var(--font-display);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: 0.95rem;
-  margin-top: 1.75rem;
-  margin-bottom: 0.25rem;
+  font-size: 1rem;
+  margin-top: 1.9rem;
+  margin-bottom: 0.35rem;
 }
 .legal p,
-.legal li {
-  color: #9a9aa3;
-  line-height: 1.7;
-}
+.legal li { color: #8e8e99; line-height: 1.75; }
 .legal ul {
   list-style: disc;
   padding-left: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
-.legal a {
-  color: #ededf0;
-  text-decoration: underline;
-}
-.legal strong {
-  color: #ededf0;
-}
+.legal a { color: #f5f5f7; text-decoration: underline; }
+.legal strong { color: #f5f5f7; }
 
-/* Custom scrollbar for the dark theme. */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-thumb {
-  background: #26262b;
-  border-radius: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0b;
-}
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #24242e; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #33333f; }
+::-webkit-scrollbar-track { background: #070708; }

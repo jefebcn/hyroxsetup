@@ -56,7 +56,7 @@ export default function AddToCart({
     setHolding(false);
   }, []);
 
-  const pad = size === "lg" ? "px-5 py-4 text-sm" : "px-4 py-3 text-xs";
+  const pad = size === "lg" ? "px-5 py-4 text-sm" : "px-4 py-3.5 text-xs";
 
   return (
     <div className="w-full select-none">
@@ -67,17 +67,20 @@ export default function AddToCart({
         onPointerLeave={cancel}
         onPointerCancel={cancel}
         aria-label={`Press and hold to buy — ${formatPrice(priceCents)}`}
-        className={`relative w-full touch-none overflow-hidden rounded-md border border-blood/60
-                    bg-elevated font-bold uppercase tracking-widest text-bone
-                    transition-colors hover:border-blood ${pad}`}
+        style={{ fontFamily: "var(--font-display)" }}
+        className={`relative w-full touch-none overflow-hidden rounded-lg border font-semibold uppercase tracking-[0.14em]
+                    text-bone transition-all duration-200
+                    ${done ? "border-blood bg-blood/15" : "border-line bg-elevated hover:border-blood/70 hover:shadow-[0_0_30px_-12px_rgba(225,29,36,0.8)]"} ${pad}`}
       >
         {/* fill bar */}
         <span
           aria-hidden
-          className="absolute inset-y-0 left-0 bg-blood/35"
+          className="absolute inset-y-0 left-0"
           style={{
             width: holding ? "100%" : "0%",
             transition: `width ${holding ? HOLD_MS : 160}ms linear`,
+            background:
+              "linear-gradient(90deg, rgba(225,29,36,0.35), rgba(255,59,64,0.55))",
           }}
         />
         <span className="relative z-10 flex items-center justify-center gap-2">
