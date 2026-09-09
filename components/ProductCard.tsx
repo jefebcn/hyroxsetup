@@ -7,7 +7,7 @@ import AddToCart from "./AddToCart";
 export default function ProductCard({ product }: { product: Product }) {
   const accent = rarityColor[product.rarity];
   return (
-    <div className="group card relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-blood/50 hover:shadow-[0_24px_60px_-24px_rgba(225,29,36,0.5)]">
+    <div className="group card relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-blood/40 hover:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.9)]">
       {/* rarity top accent */}
       <span
         className="absolute inset-x-0 top-0 z-10 h-0.5 opacity-70"

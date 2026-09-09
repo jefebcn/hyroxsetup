@@ -23,14 +23,12 @@ const payments = ["Visa", "Mastercard", "Amex", "Apple Pay", "Google Pay"];
 export default function Footer() {
   return (
     <footer className="relative mt-24 border-t border-line bg-panel">
-      <div className="hairline-glow absolute inset-x-0 top-0 h-px" />
-
       {/* CTA band */}
       <div className="border-b border-line">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-10 text-center md:flex-row md:text-left">
           <div>
-            <h3 className="display text-3xl uppercase text-bone">
-              Join the <span className="text-blood">horde</span>
+            <h3 className="display text-3xl text-bone">
+              Join the <span className="text-blood-bright">horde</span>
             </h3>
             <p className="mt-1 text-sm text-ash">
               New weapons drop on TikTok first. Follow to vote on what we build next.
@@ -51,9 +49,9 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="neon-red leading-none text-blood">||||</span>
+              <span className="leading-none text-blood-bright">||||</span>
               <span className="display text-2xl text-bone">
-                WALL<span className="text-blood">BUY</span>
+                WALL<span className="text-blood-bright">BUY</span>
               </span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ash">

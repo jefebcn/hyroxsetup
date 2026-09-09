@@ -23,31 +23,23 @@ export default function Home() {
     <>
       {/* ===== HERO ===== */}
       <section className="relative overflow-hidden border-b border-line">
-        <div className="grid-bg absolute inset-0" />
-        <div className="noise pointer-events-none absolute inset-0" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(70% 60% at 72% 28%, rgba(225,29,36,0.22), transparent 68%)",
-          }}
-        />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-20 md:grid-cols-[1.05fr_0.95fr] md:py-28">
+        <div className="spotlight pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 md:grid-cols-[1fr_1fr] md:py-28 lg:gap-16">
+          {/* copy */}
           <div className="rise">
             <span className="eyebrow">Zombies Neon Collection</span>
-            <h1 className="display mt-5 text-6xl uppercase leading-[0.86] sm:text-7xl md:text-[5.5rem]">
-              Buy it
+            <h1 className="display mt-6 text-5xl leading-[0.92] sm:text-6xl md:text-[4.5rem]">
+              Buy it off
               <br />
-              off the{" "}
-              <span className="text-blood neon-red flicker">wall</span>.
+              the <span className="text-grad">wall</span>.
             </h1>
             <p className="mt-6 max-w-md text-lg leading-relaxed text-ash">
               Hand-built LED neon weapons inspired by the wall-buys you slap on
               every round. Mount your loadout. Light up the room.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link href="/shop" className="btn btn-primary">
-                Shop the wall
+                Shop the collection
               </Link>
               <a
                 href={SITE.socials.tiktok}
@@ -58,40 +50,42 @@ export default function Home() {
                 Watch on TikTok
               </a>
             </div>
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs uppercase tracking-widest text-ash">
-              <span className="inline-flex items-center gap-1.5">
+            <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 text-xs uppercase tracking-widest text-ash">
+              <span className="inline-flex items-center gap-2">
                 <span className="flex text-gold">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className="h-3.5 w-3.5 fill-current" />
                   ))}
                 </span>
-                Loved by the community
+                4.9 / 5 · loved by 2k+
               </span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-2">
                 <Truck className="h-4 w-4 text-blood-bright" /> Ships worldwide
               </span>
             </div>
           </div>
 
-          <div className="relative rise">
-            <div className="float relative aspect-[3/4] overflow-hidden rounded-2xl border border-line bg-black glow-red">
+          {/* image */}
+          <div className="relative rise-2">
+            <div className="vignette relative aspect-[4/5] overflow-hidden rounded-2xl border border-line bg-black">
               <Image
-                src="/products/raygun.jpg"
-                alt="Ray Gun neon sign"
+                src="/products/olympia.jpg"
+                alt="Olympia neon sign glowing above a gaming battlestation"
                 fill
                 priority
-                sizes="(max-width: 768px) 90vw, 40vw"
+                sizes="(max-width: 768px) 90vw, 45vw"
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
             </div>
-            <div className="card absolute -bottom-5 -left-3 flex items-center gap-3 px-4 py-3 backdrop-blur">
-              <span className="pill-gold rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-widest">
-                Legendary
+            <div className="card absolute -bottom-5 -left-3 flex items-center gap-3 px-4 py-3 backdrop-blur-sm">
+              <span className="pill-gold rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest">
+                Bestseller
               </span>
               <div>
-                <p className="display text-sm uppercase text-bone">Ray Gun</p>
-                <p className="text-[11px] text-ash">Wonder Weapon · {formatPrice(11990)}</p>
+                <p className="display text-sm text-bone">Olympia</p>
+                <p className="text-[11px] text-ash">
+                  Double-barrel · {formatPrice(6990)}
+                </p>
               </div>
             </div>
           </div>
@@ -113,8 +107,8 @@ export default function Home() {
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="eyebrow">The arsenal</span>
-            <h2 className="display mt-3 text-4xl uppercase sm:text-5xl">The Wall</h2>
-            <p className="mt-2 max-w-md text-ash">
+            <h2 className="display mt-4 text-4xl sm:text-5xl">The Wall</h2>
+            <p className="mt-3 max-w-md text-ash">
               Press &amp; hold to buy — exactly like slapping it off the wall in-game.
             </p>
           </div>
@@ -137,7 +131,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 py-20">
           <div className="mb-12 text-center">
             <span className="eyebrow justify-center">Three rounds</span>
-            <h2 className="display mt-3 text-4xl uppercase sm:text-5xl">How it works</h2>
+            <h2 className="display mt-4 text-4xl sm:text-5xl">How it works</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             <Step
@@ -165,7 +159,7 @@ export default function Home() {
       {/* ===== QUALITY SPLIT ===== */}
       <section className="mx-auto max-w-6xl px-4 py-20">
         <div className="grid items-center gap-10 md:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-black">
+          <div className="vignette relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-black">
             <Image
               src="/products/ak47.jpg"
               alt="AK-47 neon sign detail"
@@ -176,11 +170,11 @@ export default function Home() {
           </div>
           <div>
             <span className="eyebrow">Built to last the horde</span>
-            <h2 className="display mt-3 text-4xl uppercase sm:text-5xl">
+            <h2 className="display mt-4 text-4xl sm:text-5xl">
               Studio-grade neon,
               <br /> made to be seen
             </h2>
-            <ul className="mt-6 space-y-4">
+            <ul className="mt-7 space-y-4">
               {[
                 ["Flexible LED neon", "Even, glare-free glow that photographs incredibly for your clips."],
                 ["Matte-black acrylic", "Premium panel that disappears into the wall so the neon pops."],
@@ -188,7 +182,7 @@ export default function Home() {
                 ["Ready to hang", "Mounting hardware and adapter included — up in minutes."],
               ].map(([t, d]) => (
                 <li key={t} className="flex gap-3">
-                  <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-blood" />
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blood" />
                   <span>
                     <span className="font-semibold text-bone">{t}. </span>
                     <span className="text-ash">{d}</span>
@@ -235,31 +229,25 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 py-20">
         <div className="mb-10 text-center">
           <span className="eyebrow justify-center">Good to know</span>
-          <h2 className="display mt-3 text-4xl uppercase sm:text-5xl">FAQ</h2>
+          <h2 className="display mt-4 text-4xl sm:text-5xl">FAQ</h2>
         </div>
         <Faq />
       </section>
 
       {/* ===== FINAL CTA ===== */}
       <section className="relative overflow-hidden border-t border-line">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(60% 120% at 50% 0%, rgba(225,29,36,0.25), transparent 70%)",
-          }}
-        />
+        <div className="spotlight pointer-events-none absolute inset-0" />
         <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-5 px-4 py-24 text-center">
           <span className="eyebrow justify-center">Last chance before the horde</span>
-          <h2 className="display text-4xl uppercase sm:text-6xl">
-            Light up your <span className="text-blood neon-red">battlestation</span>
+          <h2 className="display text-4xl sm:text-6xl">
+            Light up your <span className="text-grad">battlestation</span>
           </h2>
           <p className="max-w-lg text-ash">
             Free shipping over {formatPrice(SITE.freeShippingOverCents)}. Built to
             order, shipped worldwide.
           </p>
           <Link href="/shop" className="btn btn-primary mt-2">
-            Shop the wall
+            Shop the collection
           </Link>
         </div>
       </section>
@@ -306,7 +294,7 @@ function Step({
       <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-blood/40 bg-blood/10 text-blood-bright [&>svg]:h-6 [&>svg]:w-6">
         {icon}
       </span>
-      <h3 className="display mt-5 text-2xl uppercase text-bone">{title}</h3>
+      <h3 className="display mt-5 text-2xl text-bone">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-ash">{text}</p>
     </div>
   );
@@ -315,7 +303,7 @@ function Step({
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="card flex flex-col items-center py-8 text-center">
-      <span className="display text-5xl text-blood-bright">{value}</span>
+      <span className="display text-5xl text-bone">{value}</span>
       <span className="mt-2 text-xs uppercase tracking-widest text-ash">{label}</span>
     </div>
   );
