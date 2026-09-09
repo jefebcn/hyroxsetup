@@ -5,8 +5,14 @@ import { rarityColor, type Product } from "@/lib/products";
 import AddToCart from "./AddToCart";
 
 export default function ProductCard({ product }: { product: Product }) {
+  const accent = rarityColor[product.rarity];
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-line bg-panel transition-colors hover:border-blood/50">
+    <div className="group card relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-blood/50 hover:shadow-[0_24px_60px_-24px_rgba(225,29,36,0.5)]">
+      {/* rarity top accent */}
+      <span
+        className="absolute inset-x-0 top-0 z-10 h-0.5 opacity-70"
+        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+      />
       <Link
         href={`/product/${product.slug}`}
         className="relative block aspect-[4/3] overflow-hidden bg-black"
@@ -16,42 +22,44 @@ export default function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.07]"
         />
-        {/* rarity + points badges */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
         <span
-          className="absolute left-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest"
-          style={{
-            color: rarityColor[product.rarity],
-            borderColor: `${rarityColor[product.rarity]}66`,
-            backgroundColor: "rgba(0,0,0,0.55)",
-          }}
+          className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest backdrop-blur"
+          style={{ color: accent, borderColor: `${accent}55`, backgroundColor: "rgba(0,0,0,0.5)" }}
         >
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
           {product.rarity}
         </span>
-        <span className="absolute right-3 top-3 rounded-full bg-black/55 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ash">
+        <span className="pill-gold absolute right-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest backdrop-blur">
           {product.points} pts
         </span>
         {!product.inStock && (
-          <span className="absolute inset-x-0 bottom-0 bg-black/70 py-1.5 text-center text-xs font-bold uppercase tracking-widest text-blood-bright">
+          <span className="absolute inset-x-0 bottom-0 bg-black/75 py-1.5 text-center text-xs font-bold uppercase tracking-widest text-blood-bright">
             Sold out
           </span>
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-5">
         <Link href={`/product/${product.slug}`}>
-          <h3 className="display text-xl text-bone group-hover:text-white">
+          <h3 className="display text-xl uppercase tracking-tight text-bone transition-colors group-hover:text-white">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1 line-clamp-2 text-sm text-ash">{product.tagline}</p>
-        <div className="mt-3 flex items-center justify-between">
-          <span className="display text-lg text-bone">
+        <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ash">
+          {product.tagline}
+        </p>
+        <div className="mt-4 flex items-baseline gap-2">
+          <span className="display text-2xl text-bone">
             {formatPrice(product.priceCents)}
           </span>
+          <span className="text-[11px] uppercase tracking-widest text-ash">
+            incl. VAT
+          </span>
         </div>
-        <div className="mt-4">
+        <div className="mt-5">
           {product.inStock ? (
             <AddToCart
               slug={product.slug}
@@ -60,7 +68,7 @@ export default function ProductCard({ product }: { product: Product }) {
               size="sm"
             />
           ) : (
-            <div className="rounded-md border border-line bg-elevated px-4 py-3 text-center text-xs font-bold uppercase tracking-widest text-ash">
+            <div className="rounded-lg border border-line bg-elevated px-4 py-3 text-center text-xs font-bold uppercase tracking-widest text-ash">
               Out of stock
             </div>
           )}
