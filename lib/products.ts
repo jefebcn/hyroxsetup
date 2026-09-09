@@ -21,7 +21,18 @@ export interface Product {
   specs: ProductSpec[];
   inStock: boolean;
   featured?: boolean;
+  /** Average star rating (0–5) for social proof. */
+  rating: number;
+  /** Number of reviews behind the rating. */
+  reviews: number;
 }
+
+/**
+ * Tiny neutral blur used as the placeholder while product images load —
+ * keeps the layout calm and premium instead of flashing empty boxes.
+ */
+export const BLUR_DATA_URL =
+  "data:image/gif;base64,R0lGODlhAQABAPAAAAsLDf///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
 
 /**
  * Product catalogue. Prices are placeholders in EUR — adjust to your real
@@ -48,6 +59,8 @@ export const products: Product[] = [
     ],
     inStock: true,
     featured: true,
+    rating: 4.8,
+    reviews: 214,
   },
   {
     slug: "ak47",
@@ -69,6 +82,8 @@ export const products: Product[] = [
     ],
     inStock: true,
     featured: true,
+    rating: 4.9,
+    reviews: 168,
   },
   {
     slug: "ray-gun",
@@ -90,6 +105,8 @@ export const products: Product[] = [
     ],
     inStock: true,
     featured: true,
+    rating: 5.0,
+    reviews: 96,
   },
 ];
 

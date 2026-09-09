@@ -14,13 +14,26 @@ import { products } from "@/lib/products";
 import { SITE } from "@/lib/site";
 import ProductCard from "@/components/ProductCard";
 import Faq from "@/components/Faq";
+import JsonLd from "@/components/JsonLd";
+import { FAQ_ITEMS } from "@/lib/faq";
 import { formatPrice } from "@/lib/format";
 
 export default function Home() {
   const featured = products.filter((p) => p.featured);
 
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_ITEMS.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+
   return (
     <>
+      <JsonLd data={faqLd} />
       {/* ===== HERO (full-bleed, image-led) ===== */}
       <section className="relative isolate flex min-h-[86vh] items-end overflow-hidden border-b border-line">
         <Image
