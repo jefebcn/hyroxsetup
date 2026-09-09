@@ -1,52 +1,56 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-
-const title = "HYROX San Marino — 3D Event Map";
-const description =
-  "Interactive 3D map viewer for the HYROX competition at Multieventi Sport Domus, Republic of San Marino. Running loop, indoor arena, power village, station flow, weights and logistics.";
+import { CartProvider } from "@/lib/cart-context";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import CartDrawer from "@/components/CartDrawer";
+import CookieBanner from "@/components/CookieBanner";
+import { SITE, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title,
-  description,
-  applicationName: "HYROX San Marino",
+  metadataBase: new URL(siteUrl()),
+  title: {
+    default: `${SITE.name} — ${SITE.tagline}`,
+    template: `%s · ${SITE.name}`,
+  },
+  description: SITE.description,
+  applicationName: SITE.name,
   keywords: [
-    "HYROX",
-    "San Marino",
-    "Multieventi Sport Domus",
-    "3D map",
-    "Mapbox",
-    "fitness race",
+    "Call of Duty",
+    "Zombies",
+    "neon sign",
+    "LED wall art",
+    "gaming room decor",
+    "Ray Gun",
+    "wall buy",
   ],
   openGraph: {
-    title,
-    description,
+    title: `${SITE.name} — ${SITE.tagline}`,
+    description: SITE.description,
     type: "website",
-    siteName: "HYROX San Marino",
-    locale: "it_IT",
-    alternateLocale: ["en_US"],
+    siteName: SITE.name,
   },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#0a0a0a",
+  themeColor: "#0a0a0b",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="it">
-      <body>{children}</body>
+    <html lang="en">
+      <body className="flex min-h-screen flex-col">
+        <CartProvider>
+          <Header />
+          <div className="flex-1">{children}</div>
+          <Footer />
+          <CartDrawer />
+          <CookieBanner />
+        </CartProvider>
+      </body>
     </html>
   );
 }
