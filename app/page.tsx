@@ -21,23 +21,31 @@ export default function Home() {
 
   return (
     <>
-      {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden border-b border-line">
-        <div className="spotlight pointer-events-none absolute inset-0" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 md:grid-cols-[1fr_1fr] md:py-28 lg:gap-16">
-          {/* copy */}
-          <div className="rise">
+      {/* ===== HERO (full-bleed, image-led) ===== */}
+      <section className="relative isolate flex min-h-[86vh] items-end overflow-hidden border-b border-line">
+        <Image
+          src="/products/olympia.jpg"
+          alt="Olympia LED neon sign glowing above a gaming battlestation"
+          fill
+          priority
+          sizes="100vw"
+          className="-z-10 object-cover"
+        />
+        {/* legibility overlays */}
+        <div className="absolute inset-0 -z-10 bg-linear-to-t from-ink via-ink/75 to-ink/25" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-r from-ink/85 via-ink/20 to-transparent" />
+
+        <div className="relative mx-auto w-full max-w-6xl px-4 pb-14 pt-28 md:pb-20">
+          <div className="max-w-xl rise">
             <span className="eyebrow">Zombies Neon Collection</span>
-            <h1 className="display mt-6 text-5xl leading-[0.92] sm:text-6xl md:text-[4.5rem]">
-              Buy it off
-              <br />
-              the <span className="text-grad">wall</span>.
+            <h1 className="display mt-5 text-5xl leading-[0.95] sm:text-6xl md:text-7xl">
+              Buy it off the <span className="text-grad">wall</span>.
             </h1>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-ash">
-              Hand-built LED neon weapons inspired by the wall-buys you slap on
-              every round. Mount your loadout. Light up the room.
+            <p className="mt-5 max-w-md text-base leading-relaxed text-bone/85 sm:text-lg">
+              Hand-built LED neon weapons from the wall-buys you slap on every
+              round. Mount your loadout. Light up the room.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link href="/shop" className="btn btn-primary">
                 Shop the collection
               </Link>
@@ -50,7 +58,7 @@ export default function Home() {
                 Watch on TikTok
               </a>
             </div>
-            <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 text-xs uppercase tracking-widest text-ash">
+            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 text-xs uppercase tracking-widest text-ash">
               <span className="inline-flex items-center gap-2">
                 <span className="flex text-gold">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -64,50 +72,15 @@ export default function Home() {
               </span>
             </div>
           </div>
-
-          {/* image */}
-          <div className="relative rise-2">
-            <div className="vignette relative aspect-[4/5] overflow-hidden rounded-2xl border border-line bg-black">
-              <Image
-                src="/products/olympia.jpg"
-                alt="Olympia neon sign glowing above a gaming battlestation"
-                fill
-                priority
-                sizes="(max-width: 768px) 90vw, 45vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="card absolute -bottom-5 -left-3 flex items-center gap-3 px-4 py-3 backdrop-blur-sm">
-              <span className="pill-gold rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest">
-                Bestseller
-              </span>
-              <div>
-                <p className="display text-sm text-bone">Olympia</p>
-                <p className="text-[11px] text-ash">
-                  Double-barrel · {formatPrice(6990)}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* ===== TRUST STRIP ===== */}
-      <section className="border-b border-line bg-panel">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px overflow-hidden md:grid-cols-4">
-          <Feature icon={<Zap />} title="Real neon-flex" text="Hand-shaped LED, never a printed sticker." />
-          <Feature icon={<Sparkles />} title="Remote dimmer" text="Set the vibe — on, off, dimmed, in a click." />
-          <Feature icon={<Truck />} title="Ships worldwide" text={`Free over ${formatPrice(SITE.freeShippingOverCents)}.`} />
-          <Feature icon={<ShieldCheck />} title="14-day returns" text="Not stoked? Send it back, no drama." />
-        </div>
-      </section>
-
-      {/* ===== FEATURED / THE WALL ===== */}
-      <section className="mx-auto max-w-6xl px-4 py-20">
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      {/* ===== FEATURED / THE WALL — right under the fold so new visitors see what to buy ===== */}
+      <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="eyebrow">The arsenal</span>
-            <h2 className="display mt-4 text-4xl sm:text-5xl">The Wall</h2>
+            <h2 className="display mt-4 text-4xl sm:text-5xl">Grab a weapon</h2>
             <p className="mt-3 max-w-md text-ash">
               Press &amp; hold to buy — exactly like slapping it off the wall in-game.
             </p>
@@ -126,8 +99,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== HOW IT WORKS ===== */}
+      {/* ===== TRUST STRIP ===== */}
       <section className="border-y border-line bg-panel">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px overflow-hidden md:grid-cols-4">
+          <Feature icon={<Zap />} title="Real neon-flex" text="Hand-shaped LED, never a printed sticker." />
+          <Feature icon={<Sparkles />} title="Remote dimmer" text="Set the vibe — on, off, dimmed, in a click." />
+          <Feature icon={<Truck />} title="Ships worldwide" text={`Free over ${formatPrice(SITE.freeShippingOverCents)}.`} />
+          <Feature icon={<ShieldCheck />} title="14-day returns" text="Not stoked? Send it back, no drama." />
+        </div>
+      </section>
+
+      {/* ===== HOW IT WORKS ===== */}
+      <section className="border-b border-line bg-panel">
         <div className="mx-auto max-w-6xl px-4 py-20">
           <div className="mb-12 text-center">
             <span className="eyebrow justify-center">Three rounds</span>

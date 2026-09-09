@@ -39,7 +39,7 @@ interface CartState {
 }
 
 const CartContext = createContext<CartState | null>(null);
-const STORAGE_KEY = "wallbuy.cart";
+export const STORAGE_KEY = "wallbuy.cart";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);

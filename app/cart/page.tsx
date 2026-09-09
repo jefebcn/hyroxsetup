@@ -7,6 +7,7 @@ import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
+import { trackTikTok, toMajor } from "@/lib/tiktok";
 
 export default function CartPage() {
   const { lines, subtotalCents, shippingCents, totalCents, setQty, remove } = useCart();
@@ -16,6 +17,17 @@ export default function CartPage() {
   async function checkout() {
     setError(null);
     setLoading(true);
+    trackTikTok("InitiateCheckout", {
+      contents: lines.map((l) => ({
+        content_id: l.slug,
+        content_name: l.product.name,
+        content_type: "product",
+        quantity: l.qty,
+        price: toMajor(l.product.priceCents),
+      })),
+      value: toMajor(totalCents),
+      currency: SITE.currency,
+    });
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
