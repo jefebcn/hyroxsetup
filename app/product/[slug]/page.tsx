@@ -7,6 +7,7 @@ import { getProduct, products, rarityColor } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
 import AddToCart from "@/components/AddToCart";
 import ProductCard from "@/components/ProductCard";
+import ViewContentTracker from "@/components/ViewContentTracker";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -44,6 +45,11 @@ export default async function ProductPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <ViewContentTracker
+        slug={product.slug}
+        name={product.name}
+        priceCents={product.priceCents}
+      />
       <nav className="mb-6 text-xs uppercase tracking-widest text-ash">
         <Link href="/shop" className="hover:text-bone">
           Shop

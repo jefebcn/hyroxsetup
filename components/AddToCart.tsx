@@ -4,6 +4,8 @@ import { useCallback, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
+import { trackTikTok, toMajor } from "@/lib/tiktok";
+import { SITE } from "@/lib/site";
 
 const HOLD_MS = 650;
 
@@ -36,10 +38,17 @@ export default function AddToCart({
     setHolding(false);
     setDone(true);
     add(slug);
+    trackTikTok("AddToCart", {
+      contents: [
+        { content_id: slug, content_type: "product", quantity: 1, price: toMajor(priceCents) },
+      ],
+      value: toMajor(priceCents),
+      currency: SITE.currency,
+    });
     if (openOnAdd) setOpen(true);
     if (doneTimer.current) clearTimeout(doneTimer.current);
     doneTimer.current = setTimeout(() => setDone(false), 1400);
-  }, [add, slug, openOnAdd, setOpen]);
+  }, [add, slug, priceCents, openOnAdd, setOpen]);
 
   const start = useCallback(
     (e: React.PointerEvent) => {

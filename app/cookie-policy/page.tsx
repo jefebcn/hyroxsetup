@@ -29,6 +29,24 @@ export default function CookiePolicyPage() {
         cookie banner.
       </p>
 
+      <h2>Marketing &amp; advertising cookies (optional)</h2>
+      <p>
+        Because we advertise and sell primarily through TikTok, we may use the{" "}
+        <strong>TikTok Pixel</strong> to measure the performance of our ads,
+        understand which products people view and buy, and show relevant
+        promotions. The pixel can set cookies and share event data (such as page
+        views, add-to-cart and purchases) with TikTok. It is only loaded after
+        you choose &ldquo;Accept all&rdquo; in the cookie banner. See{" "}
+        <a
+          href="https://www.tiktok.com/legal/page/global/privacy-policy/en"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          TikTok&rsquo;s Privacy Policy
+        </a>{" "}
+        for how TikTok processes this data.
+      </p>
+
       <h2>Payment</h2>
       <p>
         Our payment provider (Stripe) may set cookies necessary for secure payment
