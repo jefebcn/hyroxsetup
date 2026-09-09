@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/format";
-import { rarityColor, type Product } from "@/lib/products";
+import { rarityColor, BLUR_DATA_URL, type Product } from "@/lib/products";
 import AddToCart from "./AddToCart";
+import Stars from "./Stars";
 
 export default function ProductCard({ product }: { product: Product }) {
   const accent = rarityColor[product.rarity];
@@ -22,6 +23,8 @@ export default function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
+          placeholder="blur"
+          blurDataURL={BLUR_DATA_URL}
           className="object-cover transition-transform duration-700 group-hover:scale-[1.07]"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
@@ -48,7 +51,8 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ash">
+        <Stars rating={product.rating} reviews={product.reviews} className="mt-2" />
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ash">
           {product.tagline}
         </p>
         <div className="mt-4 flex items-baseline gap-2">

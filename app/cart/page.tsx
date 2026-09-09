@@ -8,6 +8,7 @@ import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
 import { trackTikTok, toMajor } from "@/lib/tiktok";
+import FreeShippingMeter from "@/components/FreeShippingMeter";
 
 export default function CartPage() {
   const { lines, subtotalCents, shippingCents, totalCents, setQty, remove } = useCart();
@@ -127,6 +128,9 @@ export default function CartPage() {
 
           <aside className="h-fit rounded-xl border border-line bg-panel p-5">
             <h2 className="display text-2xl">Summary</h2>
+            <div className="mt-4">
+              <FreeShippingMeter subtotalCents={subtotalCents} />
+            </div>
             <div className="mt-4 space-y-1.5 text-sm">
               <div className="flex justify-between text-ash">
                 <span>Subtotal</span>

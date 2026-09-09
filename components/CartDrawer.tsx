@@ -7,6 +7,7 @@ import { X, Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
+import FreeShippingMeter from "./FreeShippingMeter";
 
 export default function CartDrawer() {
   const { open, setOpen, lines, subtotalCents, shippingCents, totalCents, setQty, remove } =
@@ -140,6 +141,9 @@ export default function CartDrawer() {
             </div>
 
             <div className="border-t border-line px-5 py-4">
+              <div className="mb-4">
+                <FreeShippingMeter subtotalCents={subtotalCents} />
+              </div>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between text-ash">
                   <span>Subtotal</span>

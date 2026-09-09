@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Truck, ShieldCheck, Undo2 } from "lucide-react";
-import { getProduct, products, rarityColor } from "@/lib/products";
+import { Truck, ShieldCheck, Undo2, Clock, Flame } from "lucide-react";
+import { getProduct, products, rarityColor, BLUR_DATA_URL } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
+import { SITE, siteUrl } from "@/lib/site";
 import AddToCart from "@/components/AddToCart";
 import ProductCard from "@/components/ProductCard";
 import ViewContentTracker from "@/components/ViewContentTracker";
+import StickyBuyBar from "@/components/StickyBuyBar";
+import Stars from "@/components/Stars";
+import JsonLd from "@/components/JsonLd";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -43,8 +47,33 @@ export default async function ProductPage({
 
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 3);
 
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: [`${siteUrl()}${product.image}`],
+    description: product.blurb,
+    sku: product.slug,
+    brand: { "@type": "Brand", name: SITE.name },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: product.rating,
+      reviewCount: product.reviews,
+    },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: SITE.currency,
+      price: (product.priceCents / 100).toFixed(2),
+      availability: product.inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      url: `${siteUrl()}/product/${product.slug}`,
+    },
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <JsonLd data={productLd} />
       <ViewContentTracker
         slug={product.slug}
         name={product.name}
@@ -66,6 +95,8 @@ export default async function ProductPage({
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
+            placeholder="blur"
+            blurDataURL={BLUR_DATA_URL}
             className="object-cover"
           />
           <span
@@ -83,7 +114,13 @@ export default async function ProductPage({
         {/* Info */}
         <div>
           <h1 className="display text-4xl sm:text-5xl">{product.name}</h1>
-          <p className="mt-2 text-ash">{product.tagline}</p>
+          <Stars
+            rating={product.rating}
+            reviews={product.reviews}
+            size="md"
+            className="mt-3"
+          />
+          <p className="mt-3 text-ash">{product.tagline}</p>
 
           <div className="mt-5 flex items-baseline gap-3">
             <span className="display text-3xl text-bone">
@@ -94,6 +131,18 @@ export default async function ProductPage({
             </span>
           </div>
 
+          {/* urgency / reassurance */}
+          {product.inStock && (
+            <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-widest">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-blood/40 bg-blood/10 px-3 py-1 text-blood-bright">
+                <Flame className="h-3.5 w-3.5" /> Trending on TikTok
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-elevated px-3 py-1 text-ash">
+                <Clock className="h-3.5 w-3.5" /> Ships in 24–48h
+              </span>
+            </div>
+          )}
+
           <p className="mt-5 leading-relaxed text-ash">{product.blurb}</p>
 
           <div className="mt-6 max-w-sm">
@@ -102,6 +151,7 @@ export default async function ProductPage({
                 slug={product.slug}
                 priceCents={product.priceCents}
                 points={product.points}
+                showQty
               />
             ) : (
               <div className="rounded-md border border-line bg-elevated px-4 py-4 text-center text-sm font-bold uppercase tracking-widest text-ash">
@@ -143,6 +193,15 @@ export default async function ProductPage({
           ))}
         </div>
       </section>
+
+      {product.inStock && (
+        <StickyBuyBar
+          slug={product.slug}
+          name={product.name}
+          priceCents={product.priceCents}
+          points={product.points}
+        />
+      )}
     </div>
   );
 }

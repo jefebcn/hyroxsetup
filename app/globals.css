@@ -42,6 +42,17 @@ body {
   color: #fff;
 }
 
+/* ---- Accessibility: visible keyboard focus ---- */
+:focus-visible {
+  outline: 2px solid var(--color-blood-bright);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Pointer clicks shouldn't show the ring, keyboard should. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* ---- Typography ---- */
 .display {
   font-family: var(--font-display);
