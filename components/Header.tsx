@@ -26,11 +26,11 @@ export default function Header() {
   return (
     <>
       {/* Perks marquee */}
-      <div className="overflow-hidden border-b border-line bg-blood/95">
-        <div className="marquee-track py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
+      <div className="overflow-hidden border-b border-line bg-panel">
+        <div className="marquee-track py-2 text-[11px] font-medium uppercase tracking-[0.2em] text-ash">
           {[...PERKS, ...PERKS, ...PERKS, ...PERKS].map((p, i) => (
             <span key={i} className="mx-6 inline-flex items-center gap-6">
-              {p} <span className="text-white/50">/</span>
+              {p} <span className="text-blood/70">/</span>
             </span>
           ))}
         </div>
@@ -39,9 +39,9 @@ export default function Header() {
       <header className="sticky top-0 z-40 border-b border-line bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="neon-red text-lg leading-none text-blood">||||</span>
+            <span className="text-lg leading-none text-blood-bright">||||</span>
             <span className="display text-2xl tracking-tight text-bone">
-              WALL<span className="text-blood">BUY</span>
+              WALL<span className="text-blood-bright">BUY</span>
             </span>
           </Link>
 
@@ -83,9 +83,6 @@ export default function Header() {
             </button>
           </div>
         </div>
-
-        {/* glowing hairline */}
-        <div className="hairline-glow h-px w-full" />
 
         {/* Mobile menu */}
         {menu && (
