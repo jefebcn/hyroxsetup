@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
@@ -40,7 +41,14 @@ export default function Header() {
       <header className="sticky top-0 z-40 border-b border-line bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="text-lg leading-none text-blood-bright">||||</span>
+            <Image
+              src="/brand/wallbuy-emblem.jpg"
+              alt="WALL BUY"
+              width={36}
+              height={36}
+              priority
+              className="h-9 w-9 rounded-md border border-line"
+            />
             <span className="display text-2xl tracking-tight text-bone">
               WALL<span className="text-blood-bright">BUY</span>
             </span>
