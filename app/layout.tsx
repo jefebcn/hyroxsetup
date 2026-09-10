@@ -21,6 +21,8 @@ import CartDrawer from "@/components/CartDrawer";
 import CookieBanner from "@/components/CookieBanner";
 import TikTokPixel from "@/components/TikTokPixel";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import BackToTop from "@/components/BackToTop";
+import ScrollReveal from "@/components/ScrollReveal";
 import JsonLd from "@/components/JsonLd";
 import { ClerkProvider } from "@clerk/nextjs";
 import { isClerkConfigured } from "@/lib/auth";
@@ -102,6 +104,8 @@ export default function RootLayout({
           <Footer />
           <CartDrawer />
           <CookieBanner />
+          <BackToTop />
+          <ScrollReveal />
         </CartProvider>
       </body>
     </html>

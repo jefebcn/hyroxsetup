@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
@@ -24,6 +25,16 @@ const PERKS = [
 export default function Header() {
   const { count, setOpen } = useCart();
   const [menu, setMenu] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  // Close the mobile menu whenever the route changes.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMenu(false);
+  }, [pathname]);
 
   return (
     <>
@@ -64,36 +75,51 @@ export default function Header() {
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                className="group relative text-xs font-semibold uppercase tracking-[0.18em] text-ash transition-colors hover:text-bone"
-              >
-                {n.label}
-                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-blood transition-all duration-300 group-hover:w-full" />
-              </Link>
-            ))}
+            {NAV.map((n) => {
+              const active = isActive(n.href);
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`group relative text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
+                    active ? "text-bone" : "text-ash hover:text-bone"
+                  }`}
+                >
+                  {n.label}
+                  <span
+                    className={`absolute -bottom-1.5 left-0 h-px bg-blood transition-all duration-300 ${
+                      active ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-2">
             <Link
               href="/account"
               aria-label="Account"
-              className="flex items-center justify-center rounded-lg border border-line bg-panel p-2.5 text-bone transition-colors hover:border-blood/60"
+              className={`flex items-center justify-center rounded-lg border bg-panel p-2.5 text-bone transition-colors hover:border-blood/60 ${
+                isActive("/account") ? "border-blood/60" : "border-line"
+              }`}
             >
               <User className="h-4 w-4" />
             </Link>
             <button
               type="button"
               onClick={() => setOpen(true)}
-              aria-label="Open cart"
+              aria-label={`Open cart${count > 0 ? ` (${count} items)` : ""}`}
               className="relative flex items-center gap-2 rounded-lg border border-line bg-panel px-3.5 py-2.5 text-xs font-semibold uppercase tracking-widest text-bone transition-colors hover:border-blood/60"
             >
               <ShoppingCart className="h-4 w-4" />
               <span className="hidden sm:inline">Cart</span>
               {count > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blood px-1 text-[11px] font-bold text-white">
+                <span
+                  key={count}
+                  className="cart-badge flex h-5 min-w-5 items-center justify-center rounded-full bg-blood px-1 text-[11px] font-bold text-white"
+                >
                   {count}
                 </span>
               )}
@@ -102,6 +128,7 @@ export default function Header() {
               type="button"
               onClick={() => setMenu((v) => !v)}
               aria-label="Menu"
+              aria-expanded={menu}
               className="flex items-center justify-center rounded-lg border border-line bg-panel p-2.5 text-bone md:hidden"
             >
               {menu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -110,20 +137,50 @@ export default function Header() {
         </div>
 
         {/* Mobile menu */}
-        {menu && (
-          <nav className="border-t border-line bg-ink/95 px-4 py-3 md:hidden">
+        <div
+          className={`grid overflow-hidden border-line bg-ink/95 transition-all duration-300 md:hidden ${
+            menu ? "grid-rows-[1fr] border-t opacity-100" : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <nav className="min-h-0 overflow-hidden px-4 py-2">
             {NAV.map((n) => (
               <Link
                 key={n.href}
                 href={n.href}
                 onClick={() => setMenu(false)}
-                className="block py-3 text-sm font-semibold uppercase tracking-widest text-bone"
+                aria-current={isActive(n.href) ? "page" : undefined}
+                className={`flex items-center justify-between border-b border-line py-3 text-sm font-semibold uppercase tracking-widest ${
+                  isActive(n.href) ? "text-blood-bright" : "text-bone"
+                }`}
               >
                 {n.label}
+                <span className="text-ash">→</span>
               </Link>
             ))}
+            <Link
+              href="/account"
+              onClick={() => setMenu(false)}
+              className="flex items-center gap-2 py-3 text-sm font-semibold uppercase tracking-widest text-bone"
+            >
+              <User className="h-4 w-4" /> Account
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setMenu(false);
+                setOpen(true);
+              }}
+              className="flex w-full items-center gap-2 py-3 text-left text-sm font-semibold uppercase tracking-widest text-bone"
+            >
+              <ShoppingCart className="h-4 w-4" /> Cart
+              {count > 0 && (
+                <span className="ml-1 rounded-full bg-blood px-1.5 text-[11px] font-bold text-white">
+                  {count}
+                </span>
+              )}
+            </button>
           </nav>
-        )}
+        </div>
       </header>
     </>
   );

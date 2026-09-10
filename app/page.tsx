@@ -99,7 +99,7 @@ export default function Home() {
             View all →
           </Link>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="reveal grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
@@ -123,7 +123,7 @@ export default function Home() {
 
       {/* ===== QUALITY SPLIT ===== */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <div className="grid items-center gap-10 md:grid-cols-2">
+        <div className="reveal grid items-center gap-10 md:grid-cols-2">
           <div className="vignette relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-black">
             <Image
               src="/products/ak47.jpg"
@@ -176,7 +176,7 @@ export default function Home() {
             <Stat value="40+" label="Countries" />
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="reveal grid gap-6 md:grid-cols-3">
             {featuredReviews().map((r) => {
               const product = products.find((p) => p.slug === r.slug);
               const initial = r.author.replace(/^@/, "").charAt(0).toUpperCase();
@@ -251,7 +251,7 @@ export default function Home() {
         <div className="cta-glow-red pointer-events-none absolute inset-0" />
         <div className="cta-glow-green pointer-events-none absolute inset-0" />
 
-        <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-28 text-center">
+        <div className="reveal relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-28 text-center">
           <span className="eyebrow justify-center">Last chance before the horde</span>
           <h2 className="display text-5xl leading-[0.95] sm:text-6xl md:text-7xl">
             Light up your <span className="text-grad">battlestation</span>
