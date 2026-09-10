@@ -247,19 +247,50 @@ export default function Home() {
 
       {/* ===== FINAL CTA ===== */}
       <section className="relative overflow-hidden border-t border-line">
-        <div className="spotlight pointer-events-none absolute inset-0" />
-        <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-5 px-4 py-24 text-center">
+        {/* living atmosphere: crimson from the top, Element-115 green from below */}
+        <div className="cta-glow-red pointer-events-none absolute inset-0" />
+        <div className="cta-glow-green pointer-events-none absolute inset-0" />
+
+        <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-28 text-center">
           <span className="eyebrow justify-center">Last chance before the horde</span>
-          <h2 className="display text-4xl sm:text-6xl">
+          <h2 className="display text-5xl leading-[0.95] sm:text-6xl md:text-7xl">
             Light up your <span className="text-grad">battlestation</span>
           </h2>
-          <p className="max-w-lg text-ash">
-            Free shipping over {formatPrice(SITE.freeShippingOverCents)}. Built to
-            order, shipped worldwide.
+          <p className="max-w-lg text-base text-ash sm:text-lg">
+            Hand-built LED neon weapons — built to order, shipped worldwide.
           </p>
-          <Link href="/shop" className="btn btn-primary mt-2">
-            Shop the collection
-          </Link>
+
+          {/* offer chips */}
+          <div className="flex flex-wrap justify-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-panel px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-ash">
+              <Truck className="h-3.5 w-3.5 text-blood-bright" /> Free over{" "}
+              {formatPrice(SITE.freeShippingOverCents)}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#7ed957]/40 bg-[#7ed957]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#7ed957]">
+              <Zap className="h-3.5 w-3.5" /> Buy 2, save {SITE.bundle.percent}%
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-panel px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-ash">
+              <ShieldCheck className="h-3.5 w-3.5 text-blood-bright" /> Secure checkout
+            </span>
+          </div>
+
+          <div className="mt-1 flex flex-wrap justify-center gap-3">
+            <Link href="/shop" className="btn btn-primary">
+              Shop the collection
+            </Link>
+            <a
+              href={SITE.socials.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              Watch on TikTok
+            </a>
+          </div>
+
+          <p className="mt-2 text-xs uppercase tracking-widest text-ash">
+            Ships worldwide · 14-day returns · Remote dimmer included
+          </p>
         </div>
       </section>
     </>

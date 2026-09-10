@@ -304,6 +304,38 @@ body {
   }
 }
 
+/* ---- Final CTA atmosphere ---- */
+.cta-glow-red {
+  background: radial-gradient(
+    55% 60% at 50% 0%,
+    rgba(184, 18, 31, 0.3),
+    transparent 70%
+  );
+  animation: wb-cta-red 7s ease-in-out infinite;
+}
+.cta-glow-green {
+  background: radial-gradient(
+    50% 55% at 50% 100%,
+    rgba(126, 217, 87, 0.14),
+    transparent 72%
+  );
+  animation: wb-cta-green 9s ease-in-out infinite;
+}
+@keyframes wb-cta-red {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+@keyframes wb-cta-green {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-glow-red,
+  .cta-glow-green {
+    animation: none;
+  }
+}
+
 /* ---- Legal / long-form typography ---- */
 .legal h2 {
   color: #f3f2f0;
