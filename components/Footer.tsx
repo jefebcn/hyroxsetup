@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { SITE } from "@/lib/site";
 import { formatPrice } from "@/lib/format";
+import Newsletter from "./Newsletter";
 
 const shopLinks = [
   { href: "/shop", label: "All weapons" },
@@ -24,11 +25,26 @@ const payments = ["Visa", "Mastercard", "Amex", "Apple Pay", "Google Pay"];
 export default function Footer() {
   return (
     <footer className="relative mt-24 border-t border-line bg-panel">
-      {/* CTA band */}
+      {/* Newsletter band */}
       <div className="border-b border-line">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-10 text-center md:flex-row md:text-left">
           <div>
             <h3 className="display text-3xl text-bone">
+              Don&rsquo;t miss the <span className="text-blood-bright">next drop</span>
+            </h3>
+            <p className="mt-1 text-sm text-ash">
+              New weapons sell out fast. Get an email the moment they hit the wall.
+            </p>
+          </div>
+          <Newsletter />
+        </div>
+      </div>
+
+      {/* Social band */}
+      <div className="border-b border-line">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-4 py-8 text-center md:flex-row md:text-left">
+          <div>
+            <h3 className="display text-2xl text-bone">
               Join the <span className="text-blood-bright">horde</span>
             </h3>
             <p className="mt-1 text-sm text-ash">

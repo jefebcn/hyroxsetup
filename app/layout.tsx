@@ -25,6 +25,8 @@ import BackToTop from "@/components/BackToTop";
 import ScrollReveal from "@/components/ScrollReveal";
 import JsonLd from "@/components/JsonLd";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { isClerkConfigured } from "@/lib/auth";
 import { SITE, siteUrl } from "@/lib/site";
 
@@ -109,6 +111,8 @@ export default function RootLayout({
           <BackToTop />
           <ScrollReveal />
         </CartProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
