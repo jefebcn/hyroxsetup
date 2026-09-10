@@ -67,6 +67,8 @@ export default function RootLayout({
     "@type": "Organization",
     name: SITE.name,
     url: base,
+    logo: `${base}/icons/icon-512.png`,
+    image: `${base}/brand/wallbuy-logo.jpg`,
     description: SITE.description,
     email: SITE.supportEmail,
     sameAs: [SITE.socials.tiktok, SITE.socials.instagram],
