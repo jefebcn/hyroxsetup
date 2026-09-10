@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Truck, ShieldCheck, Undo2, Clock, Flame } from "lucide-react";
-import { getProduct, products, rarityColor, BLUR_DATA_URL } from "@/lib/products";
+import { getProduct, products, rarityColor } from "@/lib/products";
 import { getReviews } from "@/lib/reviews";
 import { formatPrice } from "@/lib/format";
 import { SITE, siteUrl } from "@/lib/site";
 import AddToCart from "@/components/AddToCart";
+import ProductGallery from "@/components/ProductGallery";
 import ProductCard from "@/components/ProductCard";
 import ViewContentTracker from "@/components/ViewContentTracker";
 import StickyBuyBar from "@/components/StickyBuyBar";
@@ -98,29 +98,23 @@ export default async function ProductPage({
       </nav>
 
       <div className="grid gap-10 md:grid-cols-2">
-        {/* Image */}
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-black">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            placeholder="blur"
-            blurDataURL={BLUR_DATA_URL}
-            className="object-cover"
-          />
-          <span
-            className="absolute left-4 top-4 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-widest"
-            style={{
-              color: rarityColor[product.rarity],
-              borderColor: `${rarityColor[product.rarity]}66`,
-              backgroundColor: "rgba(0,0,0,0.55)",
-            }}
-          >
-            {product.rarity}
-          </span>
-        </div>
+        {/* Gallery */}
+        <ProductGallery
+          images={product.images?.length ? product.images : [product.image]}
+          alt={product.name}
+          badge={
+            <span
+              className="absolute left-4 top-4 z-10 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-widest"
+              style={{
+                color: rarityColor[product.rarity],
+                borderColor: `${rarityColor[product.rarity]}66`,
+                backgroundColor: "rgba(0,0,0,0.55)",
+              }}
+            >
+              {product.rarity}
+            </span>
+          }
+        />
 
         {/* Info */}
         <div>
