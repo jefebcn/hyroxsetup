@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Truck, ShieldCheck, Undo2, Clock, Flame } from "lucide-react";
 import { getProduct, products, rarityColor, BLUR_DATA_URL } from "@/lib/products";
+import { getReviews } from "@/lib/reviews";
 import { formatPrice } from "@/lib/format";
 import { SITE, siteUrl } from "@/lib/site";
 import AddToCart from "@/components/AddToCart";
@@ -11,6 +12,7 @@ import ProductCard from "@/components/ProductCard";
 import ViewContentTracker from "@/components/ViewContentTracker";
 import StickyBuyBar from "@/components/StickyBuyBar";
 import Stars from "@/components/Stars";
+import Reviews from "@/components/Reviews";
 import JsonLd from "@/components/JsonLd";
 
 export function generateStaticParams() {
@@ -46,6 +48,7 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 3);
+  const reviews = getReviews(product.slug);
 
   const productLd = {
     "@context": "https://schema.org",
@@ -60,6 +63,14 @@ export default async function ProductPage({
       ratingValue: product.rating,
       reviewCount: product.reviews,
     },
+    review: reviews.map((r) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: r.author },
+      datePublished: r.date,
+      name: r.title,
+      reviewBody: r.body,
+      reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5 },
+    })),
     offers: {
       "@type": "Offer",
       priceCurrency: SITE.currency,
@@ -183,6 +194,9 @@ export default async function ProductPage({
           </div>
         </div>
       </div>
+
+      {/* reviews */}
+      <Reviews rating={product.rating} count={product.reviews} reviews={reviews} />
 
       {/* related */}
       <section className="mt-20">

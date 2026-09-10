@@ -15,7 +15,9 @@ import { SITE } from "@/lib/site";
 import ProductCard from "@/components/ProductCard";
 import Faq from "@/components/Faq";
 import JsonLd from "@/components/JsonLd";
+import Stars from "@/components/Stars";
 import { FAQ_ITEMS } from "@/lib/faq";
+import { featuredReviews } from "@/lib/reviews";
 import { formatPrice } from "@/lib/format";
 
 export default function Home() {
@@ -202,18 +204,17 @@ export default function Home() {
             <Stat value="40+" label="Countries" />
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            {[
-              ["This thing is unreal in person. My whole setup changed.", "@nightmare_ops"],
-              ["Bought the Ray Gun after seeing it on my FYP. No regrets.", "@round100"],
-              ["Packaging was insane and it lights up perfectly. 10/10.", "@camo_grind"],
-            ].map(([quote, handle]) => (
-              <figure key={handle} className="card p-6">
-                <Quote className="h-6 w-6 text-blood" />
+            {featuredReviews().map((r) => (
+              <figure key={r.author} className="card p-6">
+                <div className="flex items-center justify-between">
+                  <Stars rating={r.rating} size="sm" />
+                  <Quote className="h-5 w-5 text-blood" />
+                </div>
                 <blockquote className="mt-3 text-sm leading-relaxed text-bone">
-                  “{quote}”
+                  “{r.body}”
                 </blockquote>
                 <figcaption className="mt-4 text-xs uppercase tracking-widest text-ash">
-                  {handle}
+                  {r.author}
                 </figcaption>
               </figure>
             ))}
