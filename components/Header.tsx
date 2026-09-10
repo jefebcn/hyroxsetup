@@ -12,6 +12,7 @@ const NAV = [
 ];
 
 const PERKS = [
+  "Buy 2, save 10%",
   "Free shipping over €150",
   "Hand-built LED neon",
   "Ships worldwide",

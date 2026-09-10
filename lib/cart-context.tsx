@@ -27,6 +27,10 @@ interface CartState {
   lines: CartLine[];
   count: number;
   subtotalCents: number;
+  /** Bundle discount applied to the product subtotal (0 when not eligible). */
+  discountCents: number;
+  /** True once the cart qualifies for the bundle discount. */
+  bundleApplied: boolean;
   shippingCents: number;
   totalCents: number;
   add: (slug: string, qty?: number) => void;
@@ -114,6 +118,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const subtotalCents = lines.reduce((s, l) => s + l.lineTotalCents, 0);
     const count = lines.reduce((s, l) => s + l.qty, 0);
+
+    // Bundle discount: % off the product subtotal for `minItems`+ pieces.
+    const bundleApplied = count >= SITE.bundle.minItems;
+    const discountCents = bundleApplied
+      ? Math.round((subtotalCents * SITE.bundle.percent) / 100)
+      : 0;
+
+    // Shipping is charged on top and is based on the pre-discount subtotal.
     const shippingCents =
       subtotalCents === 0 || subtotalCents >= SITE.freeShippingOverCents
         ? 0
@@ -124,8 +136,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       lines,
       count,
       subtotalCents,
+      discountCents,
+      bundleApplied,
       shippingCents,
-      totalCents: subtotalCents + shippingCents,
+      totalCents: subtotalCents - discountCents + shippingCents,
       add,
       setQty,
       remove,

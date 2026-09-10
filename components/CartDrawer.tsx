@@ -10,8 +10,19 @@ import { SITE } from "@/lib/site";
 import FreeShippingMeter from "./FreeShippingMeter";
 
 export default function CartDrawer() {
-  const { open, setOpen, lines, subtotalCents, shippingCents, totalCents, setQty, remove } =
-    useCart();
+  const {
+    open,
+    setOpen,
+    lines,
+    count,
+    subtotalCents,
+    discountCents,
+    bundleApplied,
+    shippingCents,
+    totalCents,
+    setQty,
+    remove,
+  } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -141,14 +152,25 @@ export default function CartDrawer() {
             </div>
 
             <div className="border-t border-line px-5 py-4">
-              <div className="mb-4">
+              <div className="mb-4 space-y-2">
                 <FreeShippingMeter subtotalCents={subtotalCents} />
+                {!bundleApplied && count === 1 && (
+                  <p className="rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-xs text-gold">
+                    Add one more piece and save {SITE.bundle.percent}% on both.
+                  </p>
+                )}
               </div>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between text-ash">
                   <span>Subtotal</span>
                   <span className="text-bone">{formatPrice(subtotalCents)}</span>
                 </div>
+                {discountCents > 0 && (
+                  <div className="flex justify-between text-blood-bright">
+                    <span>Bundle −{SITE.bundle.percent}% ({count} pieces)</span>
+                    <span>−{formatPrice(discountCents)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-ash">
                   <span>Shipping</span>
                   <span className="text-bone">

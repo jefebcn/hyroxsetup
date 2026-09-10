@@ -28,6 +28,10 @@ export const SITE = {
   // Free-shipping threshold (in cents) and flat shipping rate (in cents).
   freeShippingOverCents: 15000,
   flatShippingCents: 690,
+  // Automatic bundle discount: buy `minItems`+ pieces, get `percent`% off the
+  // product subtotal (shipping is charged separately, on top, and is never
+  // discounted).
+  bundle: { minItems: 2, percent: 10 },
 } as const;
 
 /** Resolve the public base URL at runtime (Vercel / env aware). */
