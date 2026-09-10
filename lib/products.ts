@@ -16,7 +16,10 @@ export interface Product {
   /** In-game "cost" shown as a themed badge. */
   points: number;
   rarity: Rarity;
+  /** Primary image (cards, cart, share previews). */
   image: string;
+  /** Full gallery for the product page (falls back to the primary image). */
+  images?: string[];
   blurb: string;
   specs: ProductSpec[];
   inStock: boolean;
@@ -48,6 +51,13 @@ export const products: Product[] = [
     points: 500,
     rarity: "Common",
     image: "/products/olympia.jpg",
+    images: [
+      "/products/olympia.jpg",
+      "/products/olympia-2.jpg",
+      "/products/olympia-3.jpg",
+      "/products/olympia-4.jpg",
+      "/products/olympia-5.jpg",
+    ],
     blurb:
       "The double-barrel classic, hand-shaped in glowing neon-flex on a black acrylic panel. The one you slap off the wall on Round 1 — now lighting up your setup.",
     specs: [
