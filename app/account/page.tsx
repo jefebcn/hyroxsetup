@@ -4,7 +4,12 @@ import { redirect } from "next/navigation";
 import { LogOut, Package, Mail } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
+import { getStripe, listOrdersByEmail, type OrderSummary } from "@/lib/stripe";
+import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
+
+// Orders come from Stripe live — always render fresh.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Account",
@@ -41,6 +46,19 @@ export default async function AccountPage() {
       })
     : null;
 
+  // Pull the order history from Stripe (source of truth). Never let a Stripe
+  // hiccup take down the account page.
+  const stripe = getStripe();
+  let orders: OrderSummary[] = [];
+  let ordersError = false;
+  if (stripe && user.email) {
+    try {
+      orders = await listOrdersByEmail(stripe, user.email);
+    } catch {
+      ordersError = true;
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-16">
       <span className="eyebrow">Members</span>
@@ -60,15 +78,51 @@ export default async function AccountPage() {
           )}
         </div>
 
-        <div className="card flex items-start gap-3 p-6">
-          <Package className="mt-0.5 h-5 w-5 text-ash" />
-          <div>
+        <div className="card p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <Package className="h-5 w-5 text-blood-bright" />
             <p className="font-semibold text-bone">Your orders</p>
-            <p className="mt-1 text-sm text-ash">
-              Order confirmations are emailed to you by Stripe after checkout. A
-              full order history in your account is coming soon.
-            </p>
           </div>
+
+          {orders.length > 0 ? (
+            <ul className="space-y-3">
+              {orders.map((o) => (
+                <li
+                  key={o.id}
+                  className="rounded-lg border border-line bg-elevated p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-semibold text-bone">
+                      {new Date(o.created * 1000).toLocaleDateString("en-GB", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                    <span className="display text-bone">
+                      {formatPrice(o.amountTotal, o.currency)}
+                    </span>
+                  </div>
+                  {o.items.length > 0 && (
+                    <p className="mt-1.5 text-sm text-ash">
+                      {o.items
+                        .map((i) => `${i.quantity}× ${i.name}`)
+                        .join(", ")}
+                    </p>
+                  )}
+                  <span className="mt-2 inline-block rounded-full border border-gold/30 bg-gold/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-gold">
+                    {o.status === "paid" ? "Paid" : o.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-ash">
+              {ordersError
+                ? "We couldn't load your orders right now — please try again shortly."
+                : "No orders yet. Your purchases will appear here, and a confirmation is emailed to you after checkout."}
+            </p>
+          )}
         </div>
 
         <form action="/auth/signout" method="post">
