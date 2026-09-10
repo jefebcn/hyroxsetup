@@ -27,11 +27,10 @@ export default function TermsPage() {
       <p>
         All prices are shown in {SITE.currency}. {SITE.company.legalName} operates
         from a UAE free zone and applies 0% VAT. Orders ship from{" "}
-        {SITE.shipsFrom}; any import duties, taxes or customs fees charged by the
-        destination country are the customer&rsquo;s responsibility and are not
-        included in the price or shipping shown at checkout. We may correct obvious
-        pricing errors and cancel affected orders with a full refund. An order is
-        accepted once payment is confirmed.
+        {SITE.shipsFrom} with duties and customs handled in advance, so you
+        won&rsquo;t be charged any extra import fees on delivery. We may correct
+        obvious pricing errors and cancel affected orders with a full refund. An
+        order is accepted once payment is confirmed.
       </p>
 
       <h2>Payment</h2>

@@ -26,9 +26,9 @@ export const SITE = {
     address: "Marina Plaza, Floor 19, Dubai Marina, Dubai",
     country: "United Arab Emirates",
   },
-  // Ships from a UAE free zone (0% VAT). Import duties/taxes in the
-  // destination country are the customer's responsibility.
-  shipsFrom: "United Arab Emirates",
+  // Fulfilment ships from the EU and China with duties & customs prepaid,
+  // so customers are never charged extra import fees on delivery.
+  shipsFrom: "our EU and China fulfilment centres",
   // Free-shipping threshold (in cents) and flat shipping rate (in cents).
   freeShippingOverCents: 15000,
   flatShippingCents: 990,

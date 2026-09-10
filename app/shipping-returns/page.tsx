@@ -23,10 +23,10 @@ export default function ShippingReturnsPage() {
         {formatPrice(SITE.flatShippingCents)}, and{" "}
         <strong>free on orders over {formatPrice(SITE.freeShippingOverCents)}</strong>.
         Estimated delivery is 3–10 business days depending on destination. A
-        tracking link is emailed as soon as your order ships. Because orders ship
-        from the UAE, any customs duties or import taxes charged by the
-        destination country are the customer&rsquo;s responsibility and are not
-        included in the price or shipping.
+        tracking link is emailed as soon as your order ships.{" "}
+        <strong>Duties and customs are handled in advance</strong>, so there are
+        no surprise import fees on delivery — the price you see is the price you
+        pay (plus shipping).
       </p>
 
       <h2>Right of withdrawal (EU)</h2>
