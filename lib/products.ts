@@ -81,6 +81,7 @@ export const products: Product[] = [
     points: 900,
     rarity: "Rare",
     image: "/products/ak47.jpg",
+    images: ["/products/ak47.jpg", "/products/ak47-2.jpg"],
     blurb:
       "The unmistakable silhouette that carries you deep into the high rounds. Crisp neon outline, deep black panel, engineered to be the centrepiece of any battlestation.",
     specs: [
