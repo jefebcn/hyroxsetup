@@ -176,6 +176,85 @@ body {
   html { scroll-behavior: auto; }
 }
 
+/* ---- Animated brand wordmark (header) ---- */
+.brand-emblem {
+  border-radius: 0.375rem;
+  animation: wb-emblem-glow 4.5s ease-in-out infinite;
+}
+@keyframes wb-emblem-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px -3px rgba(140, 90, 255, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 16px -2px rgba(126, 217, 87, 0.6);
+  }
+}
+
+.brand-word .wall {
+  /* Metallic sheen sweeping across the word. */
+  background: linear-gradient(
+    100deg,
+    #f3f2f0 0%,
+    #ffffff 42%,
+    #8a8a93 52%,
+    #f3f2f0 72%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: wb-sheen 6s linear infinite;
+}
+@keyframes wb-sheen {
+  0% {
+    background-position: 220% 0;
+  }
+  100% {
+    background-position: -220% 0;
+  }
+}
+
+.brand-word .buy {
+  /* Live neon glow that gently breathes. */
+  color: var(--color-blood-bright);
+  animation: wb-neon 3.4s ease-in-out infinite;
+}
+@keyframes wb-neon {
+  0%,
+  100% {
+    text-shadow:
+      0 0 6px rgba(217, 44, 58, 0.5),
+      0 0 16px rgba(217, 44, 58, 0.3);
+  }
+  50% {
+    text-shadow:
+      0 0 12px rgba(217, 44, 58, 0.9),
+      0 0 26px rgba(217, 44, 58, 0.55);
+  }
+}
+
+/* A touch more life on hover. */
+.group:hover .brand-emblem {
+  animation-duration: 2.2s;
+}
+.group:hover .brand-word .buy {
+  animation-duration: 1.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-emblem,
+  .brand-word .wall,
+  .brand-word .buy {
+    animation: none;
+  }
+  .brand-word .wall {
+    color: var(--color-bone);
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
 /* ---- Legal / long-form typography ---- */
 .legal h2 {
   color: #f3f2f0;
