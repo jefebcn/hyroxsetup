@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
 const NAV = [
@@ -59,6 +59,13 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/account"
+              aria-label="Account"
+              className="flex items-center justify-center rounded-lg border border-line bg-panel p-2.5 text-bone transition-colors hover:border-blood/60"
+            >
+              <User className="h-4 w-4" />
+            </Link>
             <button
               type="button"
               onClick={() => setOpen(true)}
