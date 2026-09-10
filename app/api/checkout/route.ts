@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { products } from "@/lib/products";
 import { SITE, siteUrl } from "@/lib/site";
+import { findOrCreateCustomer } from "@/lib/stripe";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { createClient } from "@/lib/supabase/server";
 
 // Countries we ship to (Stripe collects the address at checkout).
 const ALLOWED_COUNTRIES: Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry[] =
@@ -118,6 +121,24 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // If the shopper is logged in, tie the order to a Stripe customer keyed to
+  // their account email so it shows up in their order history. Never blocks
+  // the sale if this fails.
+  let customerId: string | undefined;
+  if (isSupabaseConfigured) {
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user?.email) {
+        customerId = await findOrCreateCustomer(stripe, user.email);
+      }
+    } catch (err) {
+      console.error("Customer link error", err);
+    }
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -127,6 +148,7 @@ export async function POST(req: NextRequest) {
       shipping_address_collection: { allowed_countries: ALLOWED_COUNTRIES },
       phone_number_collection: { enabled: true },
       shipping_options: [shippingOption],
+      ...(customerId ? { customer: customerId } : {}),
       ...(discounts ? { discounts } : { allow_promotion_codes: true }),
       billing_address_collection: "auto",
     });
