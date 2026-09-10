@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SITE } from "@/lib/site";
 import { formatPrice } from "@/lib/format";
 
@@ -48,12 +49,13 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="leading-none text-blood-bright">||||</span>
-              <span className="display text-2xl text-bone">
-                WALL<span className="text-blood-bright">BUY</span>
-              </span>
-            </div>
+            <Image
+              src="/brand/wallbuy-logo.jpg"
+              alt="WALL BUY — Premium LED Wall Art Collection"
+              width={1200}
+              height={655}
+              className="w-full max-w-[320px] rounded-xl border border-line"
+            />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ash">
               {SITE.description}
             </p>
