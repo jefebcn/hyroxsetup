@@ -304,6 +304,42 @@ body {
   }
 }
 
+/* ---- Scroll reveal (progressive enhancement) ---- */
+/* Only hides once JS marks the root, so no-JS users always see content. */
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: opacity, transform;
+}
+.js-reveal .reveal.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Cart badge pop (feedback on add) ---- */
+@keyframes wb-cart-pop {
+  0% { transform: scale(0.6); }
+  55% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.cart-badge {
+  animation: wb-cart-pop 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .cart-badge {
+    animation: none;
+  }
+}
+
 /* ---- Final CTA atmosphere ---- */
 .cta-glow-red {
   background: radial-gradient(
