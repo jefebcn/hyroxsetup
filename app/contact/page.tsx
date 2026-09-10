@@ -41,9 +41,10 @@ export default function ContactPage() {
       </div>
       <h2>Business details</h2>
       <p>
-        {SITE.company.legalName} · VAT {SITE.company.vat}
+        {SITE.company.legalName} · {SITE.company.registration} ·{" "}
+        {SITE.company.vat}
         <br />
-        {SITE.company.address}
+        {SITE.company.address}, {SITE.company.country}
       </p>
     </Prose>
   );

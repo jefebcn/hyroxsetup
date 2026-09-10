@@ -132,7 +132,7 @@ export default async function ProductPage({
               {formatPrice(product.priceCents)}
             </span>
             <span className="text-xs uppercase tracking-widest text-ash">
-              incl. VAT · excl. shipping
+              excl. shipping · import duties may apply
             </span>
           </div>
 
