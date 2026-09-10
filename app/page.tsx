@@ -1,18 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Zap,
-  Truck,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  MousePointerClick,
-  Wrench,
-  Quote,
-} from "lucide-react";
+import { Zap, Truck, ShieldCheck, Sparkles, Star, Quote } from "lucide-react";
 import { products } from "@/lib/products";
 import { SITE } from "@/lib/site";
 import ProductCard from "@/components/ProductCard";
+import HowItWorks from "@/components/HowItWorks";
 import Faq from "@/components/Faq";
 import JsonLd from "@/components/JsonLd";
 import Stars from "@/components/Stars";
@@ -117,41 +109,16 @@ export default function Home() {
       {/* ===== TRUST STRIP ===== */}
       <section className="border-y border-line bg-panel">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px overflow-hidden md:grid-cols-4">
-          <Feature icon={<Zap />} title="Real neon-flex" text="Hand-shaped LED, never a printed sticker." />
-          <Feature icon={<Sparkles />} title="Remote dimmer" text="Set the vibe — on, off, dimmed, in a click." />
-          <Feature icon={<Truck />} title="Ships worldwide" text={`Free over ${formatPrice(SITE.freeShippingOverCents)}.`} />
-          <Feature icon={<ShieldCheck />} title="14-day returns" text="Not stoked? Send it back, no drama." />
+          <Feature icon={<Zap />} perk="Juggernog" title="Real neon-flex" text="Hand-shaped LED, never a printed sticker." />
+          <Feature icon={<Sparkles />} perk="Stamin-Up" title="Remote dimmer" text="Set the vibe — on, off, dimmed, in a click." />
+          <Feature icon={<Truck />} perk="Speed Cola" title="Ships worldwide" text={`Free over ${formatPrice(SITE.freeShippingOverCents)}.`} />
+          <Feature icon={<ShieldCheck />} perk="PhD Flopper" title="14-day returns" text="Not stoked? Send it back, no drama." />
         </div>
       </section>
 
-      {/* ===== HOW IT WORKS ===== */}
+      {/* ===== HOW IT WORKS (interactive rounds) ===== */}
       <section className="border-b border-line bg-panel">
-        <div className="mx-auto max-w-6xl px-4 py-20">
-          <div className="mb-12 text-center">
-            <span className="eyebrow justify-center">Three rounds</span>
-            <h2 className="display mt-4 text-4xl sm:text-5xl">How it works</h2>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            <Step
-              n="01"
-              icon={<MousePointerClick />}
-              title="Pick your weapon"
-              text="Browse the wall and choose the neon that fits your loadout."
-            />
-            <Step
-              n="02"
-              icon={<Zap />}
-              title="Press & hold to buy"
-              text="Hold the buy button — just like the game — and it drops in your cart."
-            />
-            <Step
-              n="03"
-              icon={<Wrench />}
-              title="Mount & glow"
-              text="Hang it, plug it in, dial the dimmer. Your room just got a Pack-a-Punch."
-            />
-          </div>
-        </div>
+        <HowItWorks />
       </section>
 
       {/* ===== QUALITY SPLIT ===== */}
@@ -254,45 +221,31 @@ export default function Home() {
 
 function Feature({
   icon,
+  perk,
   title,
   text,
 }: {
   icon: React.ReactNode;
+  perk: string;
   title: string;
   text: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 bg-panel p-6 outline outline-1 -outline-offset-[0.5px] outline-line">
-      <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-elevated text-blood-bright [&>svg]:h-5 [&>svg]:w-5">
-        {icon}
-      </span>
+    <div className="group relative flex flex-col gap-2 bg-panel p-6 outline outline-1 -outline-offset-[0.5px] outline-line transition-colors duration-300 hover:bg-elevated">
+      {/* crimson accent that wipes in on hover */}
+      <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-blood transition-transform duration-300 group-hover:scale-x-100" />
+      <div className="flex items-center justify-between">
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-elevated text-blood-bright transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-blood/50 group-hover:shadow-[0_0_16px_-5px_rgba(217,44,58,0.75)] [&>svg]:h-5 [&>svg]:w-5">
+          {icon}
+        </span>
+        <span className="pill-gold rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          {perk}
+        </span>
+      </div>
       <h3 className="mt-1 text-sm font-semibold uppercase tracking-widest text-bone">
         {title}
       </h3>
       <p className="text-sm text-ash">{text}</p>
-    </div>
-  );
-}
-
-function Step({
-  n,
-  icon,
-  title,
-  text,
-}: {
-  n: string;
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="card relative p-7">
-      <span className="display absolute right-5 top-4 text-5xl text-line">{n}</span>
-      <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-blood/40 bg-blood/10 text-blood-bright [&>svg]:h-6 [&>svg]:w-6">
-        {icon}
-      </span>
-      <h3 className="display mt-5 text-2xl text-bone">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-ash">{text}</p>
     </div>
   );
 }
