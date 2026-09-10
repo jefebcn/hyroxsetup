@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Zap, Truck, ShieldCheck, Sparkles, Star, Quote } from "lucide-react";
+import { Zap, Truck, ShieldCheck, Sparkles, Star, Quote, BadgeCheck } from "lucide-react";
 import { products } from "@/lib/products";
 import { SITE } from "@/lib/site";
 import ProductCard from "@/components/ProductCard";
@@ -109,10 +109,10 @@ export default function Home() {
       {/* ===== TRUST STRIP ===== */}
       <section className="border-y border-line bg-panel">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px overflow-hidden md:grid-cols-4">
-          <Feature icon={<Zap />} perk="Juggernog" title="Real neon-flex" text="Hand-shaped LED, never a printed sticker." />
-          <Feature icon={<Sparkles />} perk="Stamin-Up" title="Remote dimmer" text="Set the vibe — on, off, dimmed, in a click." />
-          <Feature icon={<Truck />} perk="Speed Cola" title="Ships worldwide" text={`Free over ${formatPrice(SITE.freeShippingOverCents)}.`} />
-          <Feature icon={<ShieldCheck />} perk="PhD Flopper" title="14-day returns" text="Not stoked? Send it back, no drama." />
+          <Feature icon={<Zap />} perk="Built tough" title="Real neon-flex" text="Hand-shaped LED, never a printed sticker." />
+          <Feature icon={<Sparkles />} perk="Full control" title="Remote dimmer" text="Set the vibe — on, off, dimmed, in a click." />
+          <Feature icon={<Truck />} perk="Free over €150" title="Ships worldwide" text={`Free over ${formatPrice(SITE.freeShippingOverCents)}.`} />
+          <Feature icon={<ShieldCheck />} perk="Risk-free" title="14-day returns" text="Not stoked? Send it back, no drama." />
         </div>
       </section>
 
@@ -165,26 +165,73 @@ export default function Home() {
       {/* ===== SOCIAL PROOF ===== */}
       <section className="border-y border-line bg-panel">
         <div className="mx-auto max-w-6xl px-4 py-20">
+          <div className="mb-10 text-center">
+            <span className="eyebrow justify-center">Loved by the community</span>
+            <h2 className="display mt-4 text-4xl sm:text-5xl">Off the wall, worldwide</h2>
+          </div>
+
           <div className="mb-12 grid gap-6 sm:grid-cols-3">
             <Stat value="2k+" label="Signs shipped" />
             <Stat value="4.9/5" label="Average rating" />
             <Stat value="40+" label="Countries" />
           </div>
+
           <div className="grid gap-6 md:grid-cols-3">
-            {featuredReviews().map((r) => (
-              <figure key={r.author} className="card p-6">
-                <div className="flex items-center justify-between">
-                  <Stars rating={r.rating} size="sm" />
-                  <Quote className="h-5 w-5 text-blood" />
-                </div>
-                <blockquote className="mt-3 text-sm leading-relaxed text-bone">
-                  “{r.body}”
-                </blockquote>
-                <figcaption className="mt-4 text-xs uppercase tracking-widest text-ash">
-                  {r.author}
-                </figcaption>
-              </figure>
-            ))}
+            {featuredReviews().map((r) => {
+              const product = products.find((p) => p.slug === r.slug);
+              const initial = r.author.replace(/^@/, "").charAt(0).toUpperCase();
+              return (
+                <figure
+                  key={r.author}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-ink/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blood/40"
+                >
+                  <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-blood transition-transform duration-300 group-hover:scale-x-100" />
+                  <div className="flex items-center justify-between">
+                    <Stars rating={r.rating} size="sm" />
+                    <Quote className="h-5 w-5 text-blood/70" />
+                  </div>
+
+                  {r.title && (
+                    <p className="mt-4 font-semibold text-bone">“{r.title}”</p>
+                  )}
+                  <blockquote className="mt-1.5 flex-1 text-sm leading-relaxed text-ash">
+                    {r.body}
+                  </blockquote>
+
+                  <figcaption className="mt-5 flex items-center gap-3 border-t border-line pt-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blood/40 bg-blood/10 text-sm font-bold text-blood-bright">
+                      {initial}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-1.5">
+                        <span className="truncate text-sm font-semibold text-bone">
+                          {r.author}
+                        </span>
+                        {r.verified && (
+                          <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-gold" />
+                        )}
+                      </span>
+                      {product && (
+                        <span className="text-[11px] uppercase tracking-widest text-ash">
+                          Bought the {product.weapon}
+                        </span>
+                      )}
+                    </span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+
+          <div className="mt-10 text-center">
+            <a
+              href={SITE.socials.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              See it on TikTok
+            </a>
           </div>
         </div>
       </section>
@@ -252,8 +299,10 @@ function Feature({
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="card flex flex-col items-center py-8 text-center">
-      <span className="display text-5xl text-bone">{value}</span>
+    <div className="card group flex flex-col items-center py-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-blood/40">
+      <span className="display text-5xl text-bone transition-colors duration-300 group-hover:text-blood-bright">
+        {value}
+      </span>
       <span className="mt-2 text-xs uppercase tracking-widest text-ash">{label}</span>
     </div>
   );
