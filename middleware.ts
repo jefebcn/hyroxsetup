@@ -1,40 +1,22 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "@/lib/supabase/config";
+import { NextResponse } from "next/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { isClerkConfigured } from "@/lib/auth";
 
 /**
- * Refreshes the Supabase auth session on navigation so server components see
- * a valid user. No-op when auth isn't configured.
+ * Clerk middleware when auth is configured; a no-op pass-through otherwise so
+ * the app runs without Clerk keys.
  */
-export async function middleware(request: NextRequest) {
-  if (!isSupabaseConfigured) return NextResponse.next();
-
-  let response = NextResponse.next({ request });
-
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
-        );
-      },
-    },
-  });
-
-  // Touch the session so it refreshes if needed.
-  await supabase.auth.getUser();
-
-  return response;
-}
+export default isClerkConfigured
+  ? clerkMiddleware()
+  : function middleware() {
+      return NextResponse.next();
+    };
 
 export const config = {
   matcher: [
-    // Everything except static assets and images.
+    // Skip Next internals and static assets; run on everything else + API.
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/:path*",
   ],
 };

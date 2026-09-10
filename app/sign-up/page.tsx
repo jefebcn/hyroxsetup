@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignIn } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 import { isClerkConfigured } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Log in",
+  title: "Create account",
   robots: { index: false },
 };
 
-export default function LoginPage() {
+export default function SignUpPage() {
   if (!isClerkConfigured) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <h1 className="display text-4xl">Log in</h1>
+        <h1 className="display text-4xl">Create account</h1>
         <div className="mt-6 rounded-xl border border-line bg-panel p-6 text-sm text-ash">
           <p className="font-semibold text-bone">Accounts aren&rsquo;t enabled yet.</p>
           <p className="mt-2">
@@ -30,12 +30,12 @@ export default function LoginPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-16">
       <span className="eyebrow">Members</span>
-      <h1 className="display mt-4 text-4xl">Welcome back</h1>
+      <h1 className="display mt-4 text-4xl">Join the wall</h1>
       <p className="mt-2 text-center text-sm text-ash">
-        Log in to track your orders and check out faster.
+        Create an account to save your details and follow your orders.
       </p>
       <div className="mt-8">
-        <SignIn routing="hash" signUpUrl="/sign-up" forceRedirectUrl="/account" />
+        <SignUp routing="hash" signInUrl="/login" forceRedirectUrl="/account" />
       </div>
     </div>
   );

@@ -22,6 +22,8 @@ import CookieBanner from "@/components/CookieBanner";
 import TikTokPixel from "@/components/TikTokPixel";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import JsonLd from "@/components/JsonLd";
+import { ClerkProvider } from "@clerk/nextjs";
+import { isClerkConfigured } from "@/lib/auth";
 import { SITE, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -79,7 +81,7 @@ export default function RootLayout({
     },
   };
 
-  return (
+  const tree = (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body className="flex min-h-screen flex-col">
         <JsonLd data={orgLd} />
@@ -103,5 +105,22 @@ export default function RootLayout({
         </CartProvider>
       </body>
     </html>
+  );
+
+  // Only wrap in ClerkProvider when auth is configured, so the site runs
+  // without Clerk keys. Dark appearance to match the brand.
+  if (!isClerkConfigured) return tree;
+  return (
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#b8121f",
+          colorBackground: "#101014",
+          borderRadius: "0.6rem",
+        },
+      }}
+    >
+      {tree}
+    </ClerkProvider>
   );
 }
