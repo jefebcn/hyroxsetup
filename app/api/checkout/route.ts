@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
 
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   let subtotal = 0;
+  let totalQty = 0;
 
   for (const raw of rawItems) {
     if (!raw || typeof raw !== "object") continue;
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
     if (!product || !product.inStock) continue;
     const quantity = Math.max(1, Math.min(20, Math.floor(Number(qty) || 1)));
     subtotal += product.priceCents * quantity;
+    totalQty += quantity;
     lineItems.push({
       quantity,
       price_data: {
@@ -90,6 +92,32 @@ export async function POST(req: NextRequest) {
     },
   };
 
+  // Automatic bundle discount (% off the product subtotal) for 2+ pieces.
+  // Applied via a reusable coupon so the charged total matches the cart.
+  // Note: Stripe forbids `discounts` together with `allow_promotion_codes`.
+  let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
+  if (totalQty >= SITE.bundle.minItems) {
+    try {
+      const couponId = `wallbuy-bundle-${SITE.bundle.percent}`;
+      let coupon: Stripe.Coupon;
+      try {
+        coupon = await stripe.coupons.retrieve(couponId);
+      } catch {
+        coupon = await stripe.coupons.create({
+          id: couponId,
+          percent_off: SITE.bundle.percent,
+          duration: "once",
+          name: `Bundle ${SITE.bundle.minItems}+ (${SITE.bundle.percent}% off)`,
+        });
+      }
+      discounts = [{ coupon: coupon.id }];
+    } catch (err) {
+      // If the coupon can't be set up, fall back to no discount rather than
+      // blocking the sale.
+      console.error("Bundle coupon error", err);
+    }
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -99,7 +127,7 @@ export async function POST(req: NextRequest) {
       shipping_address_collection: { allowed_countries: ALLOWED_COUNTRIES },
       phone_number_collection: { enabled: true },
       shipping_options: [shippingOption],
-      allow_promotion_codes: true,
+      ...(discounts ? { discounts } : { allow_promotion_codes: true }),
       billing_address_collection: "auto",
     });
     return NextResponse.json({ url: session.url });
