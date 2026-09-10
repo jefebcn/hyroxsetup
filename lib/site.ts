@@ -15,8 +15,8 @@ export const SITE = {
   currency: "EUR",
   locale: "en-IE",
   socials: {
-    tiktok: "https://www.tiktok.com/@wallbuy", // TODO
-    instagram: "https://www.instagram.com/wallbuy", // TODO
+    tiktok: "https://www.tiktok.com/@wallbuy_official",
+    instagram: "https://www.instagram.com/wallbuy_official",
   },
   // Legal entity shown in the footer / legal pages.
   company: {
