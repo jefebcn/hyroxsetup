@@ -20,6 +20,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import CookieBanner from "@/components/CookieBanner";
 import TikTokPixel from "@/components/TikTokPixel";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import JsonLd from "@/components/JsonLd";
 import { SITE, siteUrl } from "@/lib/site";
 
@@ -91,6 +92,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <CartProvider>
+          <AnnouncementBar />
           <Header />
           <main id="main" className="flex-1">
             {children}
