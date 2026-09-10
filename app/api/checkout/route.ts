@@ -3,8 +3,8 @@ import Stripe from "stripe";
 import { products } from "@/lib/products";
 import { SITE, siteUrl } from "@/lib/site";
 import { findOrCreateCustomer } from "@/lib/stripe";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { createClient } from "@/lib/supabase/server";
+import { isClerkConfigured } from "@/lib/auth";
+import { currentUser } from "@clerk/nextjs/server";
 
 // Countries we ship to (Stripe collects the address at checkout).
 const ALLOWED_COUNTRIES: Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry[] =
@@ -125,14 +125,14 @@ export async function POST(req: NextRequest) {
   // their account email so it shows up in their order history. Never blocks
   // the sale if this fails.
   let customerId: string | undefined;
-  if (isSupabaseConfigured) {
+  if (isClerkConfigured) {
     try {
-      const supabase = await createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user?.email) {
-        customerId = await findOrCreateCustomer(stripe, user.email);
+      const user = await currentUser();
+      const email =
+        user?.primaryEmailAddress?.emailAddress ??
+        user?.emailAddresses[0]?.emailAddress;
+      if (email) {
+        customerId = await findOrCreateCustomer(stripe, email);
       }
     } catch (err) {
       console.error("Customer link error", err);

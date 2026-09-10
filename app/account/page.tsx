@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut, Package, Mail } from "lucide-react";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { createClient } from "@/lib/supabase/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { SignOutButton } from "@clerk/nextjs";
+import { isClerkConfigured } from "@/lib/auth";
 import { getStripe, listOrdersByEmail, type OrderSummary } from "@/lib/stripe";
 import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountPage() {
-  if (!isSupabaseConfigured) {
+  if (!isClerkConfigured) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <h1 className="display text-4xl">Account</h1>
@@ -32,15 +33,16 @@ export default async function AccountPage() {
     );
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await currentUser();
   if (!user) redirect("/login");
 
-  const memberSince = user.created_at
-    ? new Date(user.created_at).toLocaleDateString("en-GB", {
+  const email =
+    user.primaryEmailAddress?.emailAddress ??
+    user.emailAddresses[0]?.emailAddress ??
+    "";
+
+  const memberSince = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("en-GB", {
         year: "numeric",
         month: "long",
       })
@@ -51,9 +53,9 @@ export default async function AccountPage() {
   const stripe = getStripe();
   let orders: OrderSummary[] = [];
   let ordersError = false;
-  if (stripe && user.email) {
+  if (stripe && email) {
     try {
-      orders = await listOrdersByEmail(stripe, user.email);
+      orders = await listOrdersByEmail(stripe, email);
     } catch {
       ordersError = true;
     }
@@ -70,7 +72,7 @@ export default async function AccountPage() {
             <Mail className="h-5 w-5 text-blood-bright" />
             <div>
               <p className="text-xs uppercase tracking-widest text-ash">Email</p>
-              <p className="font-semibold text-bone">{user.email}</p>
+              <p className="font-semibold text-bone">{email}</p>
             </div>
           </div>
           {memberSince && (
@@ -105,9 +107,7 @@ export default async function AccountPage() {
                   </div>
                   {o.items.length > 0 && (
                     <p className="mt-1.5 text-sm text-ash">
-                      {o.items
-                        .map((i) => `${i.quantity}× ${i.name}`)
-                        .join(", ")}
+                      {o.items.map((i) => `${i.quantity}× ${i.name}`).join(", ")}
                     </p>
                   )}
                   <span className="mt-2 inline-block rounded-full border border-gold/30 bg-gold/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-gold">
@@ -125,11 +125,11 @@ export default async function AccountPage() {
           )}
         </div>
 
-        <form action="/auth/signout" method="post">
-          <button type="submit" className="btn btn-ghost w-full">
+        <SignOutButton redirectUrl="/">
+          <button type="button" className="btn btn-ghost w-full">
             <LogOut className="h-4 w-4" /> Log out
           </button>
-        </form>
+        </SignOutButton>
 
         <p className="text-center text-xs text-ash">
           Need help? Email {SITE.supportEmail}
