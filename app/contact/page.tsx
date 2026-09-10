@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Mail, Instagram, Music2 } from "lucide-react";
 import Prose from "@/components/Prose";
+import ContactForm from "@/components/ContactForm";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -39,6 +40,12 @@ export default function ContactPage() {
           <Instagram className="h-4 w-4 text-blood-bright" /> Instagram
         </a>
       </div>
+
+      <h2>Send us a message</h2>
+      <div className="not-prose">
+        <ContactForm />
+      </div>
+
       <h2>Business details</h2>
       <p>
         {SITE.company.legalName} · {SITE.company.registration} ·{" "}

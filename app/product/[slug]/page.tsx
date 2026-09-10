@@ -165,6 +165,18 @@ export default async function ProductPage({
             )}
           </div>
 
+          {/* bundle nudge */}
+          {product.inStock && (
+            <Link
+              href="/shop"
+              className="mt-3 flex max-w-sm items-center gap-2 rounded-lg border border-[#7ed957]/30 bg-[#7ed957]/10 px-3.5 py-2.5 text-xs font-semibold text-[#7ed957] transition-colors hover:border-[#7ed957]/60"
+            >
+              <Flame className="h-4 w-4" />
+              Buy 2, save {SITE.bundle.percent}% — mix any pieces
+              <span className="ml-auto">→</span>
+            </Link>
+          )}
+
           {/* trust row */}
           <div className="mt-6 grid grid-cols-3 gap-3 text-center text-[11px] uppercase tracking-widest text-ash">
             <TrustItem icon={<Truck className="h-4 w-4" />} label="Ships worldwide" />
