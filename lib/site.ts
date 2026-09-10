@@ -10,8 +10,8 @@ export const SITE = {
     "Neon LED wall art inspired by the wall-weapons of Call of Duty Zombies. Mount your loadout and light up the room.",
   // Used for absolute URLs (Open Graph, Stripe redirects). Override with
   // NEXT_PUBLIC_SITE_URL in production.
-  url: "https://wallbuy.store", // TODO: real domain
-  supportEmail: "support@wallbuy.store", // TODO
+  url: "https://wallbuyshop.com",
+  supportEmail: "support@wallbuyshop.com",
   currency: "EUR",
   locale: "en-IE",
   socials: {
@@ -20,11 +20,15 @@ export const SITE = {
   },
   // Legal entity shown in the footer / legal pages.
   company: {
-    legalName: "WALL BUY", // TODO: registered business name
-    vat: "TODO — VAT / P.IVA",
-    address: "TODO — registered address",
-    country: "TODO — country",
+    legalName: "Wall Buy FZ-LLC",
+    vat: "TRN 100482910400003",
+    registration: "DMCC Licence DMCC-849201",
+    address: "Marina Plaza, Floor 19, Dubai Marina, Dubai",
+    country: "United Arab Emirates",
   },
+  // Ships from a UAE free zone (0% VAT). Import duties/taxes in the
+  // destination country are the customer's responsibility.
+  shipsFrom: "United Arab Emirates",
   // Free-shipping threshold (in cents) and flat shipping rate (in cents).
   freeShippingOverCents: 15000,
   flatShippingCents: 990,

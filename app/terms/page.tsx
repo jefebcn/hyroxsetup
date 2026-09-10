@@ -25,9 +25,13 @@ export default function TermsPage() {
 
       <h2>Orders & pricing</h2>
       <p>
-        All prices are in {SITE.currency} and include applicable VAT unless stated
-        otherwise. We may correct obvious pricing errors and cancel affected
-        orders with a full refund. An order is accepted once payment is confirmed.
+        All prices are shown in {SITE.currency}. {SITE.company.legalName} operates
+        from a UAE free zone and applies 0% VAT. Orders ship from{" "}
+        {SITE.shipsFrom}; any import duties, taxes or customs fees charged by the
+        destination country are the customer&rsquo;s responsibility and are not
+        included in the price or shipping shown at checkout. We may correct obvious
+        pricing errors and cancel affected orders with a full refund. An order is
+        accepted once payment is confirmed.
       </p>
 
       <h2>Payment</h2>
@@ -61,13 +65,19 @@ export default function TermsPage() {
 
       <h2>Governing law</h2>
       <p>
-        These Terms are governed by the laws of {SITE.company.country}. Mandatory
-        consumer-protection rules of your country of residence still apply.
+        These Terms are governed by the laws of {SITE.company.country} (Dubai).
+        Mandatory consumer-protection rules of your country of residence still
+        apply.
       </p>
 
-      <p className="text-xs">
-        Template only — review with a professional and complete the company
-        details before launch.
+      <h2>Company details</h2>
+      <p>
+        {SITE.company.legalName} · {SITE.company.registration} ·{" "}
+        {SITE.company.vat}
+        <br />
+        {SITE.company.address}, {SITE.company.country}
+        <br />
+        {SITE.supportEmail}
       </p>
     </Prose>
   );

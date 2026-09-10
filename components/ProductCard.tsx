@@ -60,7 +60,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {formatPrice(product.priceCents)}
           </span>
           <span className="text-[11px] uppercase tracking-widest text-ash">
-            incl. VAT
+            + shipping
           </span>
         </div>
         <div className="mt-5">

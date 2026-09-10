@@ -19,13 +19,14 @@ export default function ShippingReturnsPage() {
 
       <h2>Shipping & delivery</h2>
       <p>
-        We ship worldwide. Standard shipping is{" "}
+        We ship worldwide from {SITE.shipsFrom}. Standard shipping is{" "}
         {formatPrice(SITE.flatShippingCents)}, and{" "}
         <strong>free on orders over {formatPrice(SITE.freeShippingOverCents)}</strong>.
         Estimated delivery is 3–10 business days depending on destination. A
-        tracking link is emailed as soon as your order ships. Any customs duties
-        or import taxes for destinations outside the EU are the customer&rsquo;s
-        responsibility.
+        tracking link is emailed as soon as your order ships. Because orders ship
+        from the UAE, any customs duties or import taxes charged by the
+        destination country are the customer&rsquo;s responsibility and are not
+        included in the price or shipping.
       </p>
 
       <h2>Right of withdrawal (EU)</h2>
@@ -52,10 +53,6 @@ export default function ShippingReturnsPage() {
         we&rsquo;ll arrange a free replacement or full refund.
       </p>
 
-      <p className="text-xs">
-        This policy is a template and should be reviewed against the consumer law
-        applicable to {SITE.company.legalName}&rsquo;s jurisdiction before launch.
-      </p>
     </Prose>
   );
 }
