@@ -53,6 +53,14 @@ export default function Header() {
               <span className="wall">WALL</span>
               <span className="buy">BUY</span>
             </span>
+            {/* Zombies-style kill/round tally that ticks in 1→5 */}
+            <span className="tally hidden sm:inline-flex" aria-hidden>
+              <i />
+              <i />
+              <i />
+              <i />
+              <i className="slash" />
+            </span>
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
