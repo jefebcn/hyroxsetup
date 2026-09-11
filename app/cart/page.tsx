@@ -7,7 +7,6 @@ import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
 import FreeShippingMeter from "@/components/FreeShippingMeter";
-import PayPalCheckout from "@/components/PayPalCheckout";
 
 export default function CartPage() {
   const {
@@ -138,7 +137,15 @@ export default function CartPage() {
               </div>
             </div>
 
-            <PayPalCheckout />
+            <Link
+              href="/checkout"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-blood px-5 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-blood-bright"
+            >
+              Checkout
+            </Link>
+            <p className="mt-2 text-center text-[11px] text-ash">
+              Secure payment · Visa, Mastercard &amp; Amex
+            </p>
           </aside>
         </div>
       )}
