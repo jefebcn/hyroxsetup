@@ -30,10 +30,27 @@ export default function ScrollReveal() {
           }
         }
       },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.1 },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
     );
     els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+
+    // Safety net: never leave content hidden if the observer misbehaves
+    // (some mobile browsers), and reveal anything already on screen.
+    const revealVisible = () => {
+      for (const el of els) {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.95) el.classList.add("reveal-in");
+      }
+    };
+    revealVisible();
+    const failSafe = window.setTimeout(() => {
+      els.forEach((el) => el.classList.add("reveal-in"));
+    }, 1600);
+
+    return () => {
+      window.clearTimeout(failSafe);
+      io.disconnect();
+    };
   }, []);
 
   return null;
