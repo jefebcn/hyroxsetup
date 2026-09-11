@@ -99,7 +99,7 @@ export default function Home() {
             View all →
           </Link>
         </div>
-        <div className="reveal grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
@@ -176,7 +176,7 @@ export default function Home() {
             <Stat value="40+" label="Countries" />
           </div>
 
-          <div className="reveal grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             {featuredReviews().map((r) => {
               const product = products.find((p) => p.slug === r.slug);
               const initial = r.author.replace(/^@/, "").charAt(0).toUpperCase();
