@@ -20,7 +20,7 @@ const legalLinks = [
   { href: "/cookie-policy", label: "Cookie Policy" },
   { href: "/terms", label: "Terms of Service" },
 ];
-const payments = ["Visa", "Mastercard", "Amex", "Apple Pay", "Google Pay"];
+const payments = ["PayPal", "Visa", "Mastercard", "Amex", "Maestro"];
 
 export default function Footer() {
   return (
@@ -107,7 +107,7 @@ export default function Footer() {
             </span>
             <span>
               Free shipping over {formatPrice(SITE.freeShippingOverCents)} · Secure
-              checkout by Stripe
+              checkout by PayPal
             </span>
           </div>
         </div>

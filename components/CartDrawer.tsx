@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { X, Minus, Plus, Trash2, Loader2 } from "lucide-react";
+import { X, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/format";
 import { SITE } from "@/lib/site";
 import FreeShippingMeter from "./FreeShippingMeter";
+import PayPalCheckout from "./PayPalCheckout";
 
 export default function CartDrawer() {
   const {
@@ -23,32 +23,6 @@ export default function CartDrawer() {
     setQty,
     remove,
   } = useCart();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function checkout() {
-    setError(null);
-    setLoading(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: lines.map((l) => ({ slug: l.slug, qty: l.qty })),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setError(data.error || "Checkout is not available right now.");
-        setLoading(false);
-        return;
-      }
-      window.location.href = data.url;
-    } catch {
-      setError("Something went wrong. Please try again.");
-      setLoading(false);
-    }
-  }
 
   return (
     <div
@@ -183,24 +157,7 @@ export default function CartDrawer() {
                 </div>
               </div>
 
-              {error && (
-                <p className="mt-3 rounded-md border border-blood/40 bg-blood/10 px-3 py-2 text-xs text-blood-bright">
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="button"
-                onClick={checkout}
-                disabled={loading}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-blood px-5 py-4 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-blood-bright disabled:opacity-60"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {loading ? "Redirecting…" : "Checkout"}
-              </button>
-              <p className="mt-2 text-center text-[11px] text-ash">
-                Secure payment · Cards, Apple Pay &amp; Google Pay via Stripe
-              </p>
+              <PayPalCheckout />
               <p className="mt-1 text-center text-[11px] text-ash">
                 Questions? {SITE.supportEmail}
               </p>
