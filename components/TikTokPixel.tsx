@@ -1,8 +1,9 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useState } from "react";
-import { TIKTOK_PIXEL_ID } from "@/lib/tiktok";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { TIKTOK_PIXEL_ID, trackTikTokPage } from "@/lib/tiktok";
 import { getConsent, CONSENT_EVENT } from "@/lib/consent";
 
 /**
@@ -15,6 +16,8 @@ import { getConsent, CONSENT_EVENT } from "@/lib/consent";
  */
 export default function TikTokPixel() {
   const [allowed, setAllowed] = useState(false);
+  const pathname = usePathname();
+  const lastTracked = useRef<string | null>(null);
 
   useEffect(() => {
     const sync = () => {
@@ -24,6 +27,20 @@ export default function TikTokPixel() {
     window.addEventListener(CONSENT_EVENT, sync);
     return () => window.removeEventListener(CONSENT_EVENT, sync);
   }, []);
+
+  // Track PageView on client-side route changes (the base pixel script only
+  // fires page() for the first page it loads on). Skip the initial path so we
+  // don't double-count it.
+  useEffect(() => {
+    if (!allowed) return;
+    if (lastTracked.current === null) {
+      lastTracked.current = pathname;
+      return;
+    }
+    if (lastTracked.current === pathname) return;
+    lastTracked.current = pathname;
+    trackTikTokPage();
+  }, [pathname, allowed]);
 
   if (!TIKTOK_PIXEL_ID || !allowed) return null;
 

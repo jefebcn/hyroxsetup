@@ -34,6 +34,18 @@ export interface TikTokContent {
   price: number;
 }
 
+/** Fire a TikTok PageView, silently no-op if the pixel isn't loaded. */
+export function trackTikTokPage(): void {
+  if (typeof window === "undefined") return;
+  const ttq = window.ttq;
+  if (!ttq || typeof ttq.page !== "function") return;
+  try {
+    ttq.page();
+  } catch {
+    /* pixel not ready / blocked — ignore */
+  }
+}
+
 /** Fire a TikTok event, silently no-op if the pixel isn't loaded. */
 export function trackTikTok(event: string, params?: TtqParams): void {
   if (typeof window === "undefined") return;
