@@ -101,7 +101,7 @@ export const products: Product[] = [
     name: "Ray Gun Neon Sign",
     weapon: "Ray Gun",
     tagline: "The Wonder Weapon. Pull of the box.",
-    priceCents: 8990,
+    priceCents: 6990,
     points: 1500,
     rarity: "Legendary",
     image: "/products/raygun.jpg",
