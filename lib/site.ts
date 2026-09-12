@@ -10,8 +10,8 @@ export const SITE = {
     "Neon LED wall art inspired by the wall-weapons of Call of Duty Zombies. Mount your loadout and light up the room.",
   // Used for absolute URLs (Open Graph, Stripe redirects). Override with
   // NEXT_PUBLIC_SITE_URL in production.
-  url: "https://wallbuyshop.com",
-  supportEmail: "support@wallbuyshop.com",
+  url: "https://wallbuy.shop",
+  supportEmail: "support@wallbuy.shop",
   currency: "EUR",
   locale: "en-IE",
   socials: {

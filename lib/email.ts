@@ -8,7 +8,7 @@ import { Resend } from "resend";
  *
  * Env:
  *   RESEND_API_KEY       — enables sending + audience writes
- *   RESEND_FROM          — verified sender, e.g. "WALL BUY <hello@wallbuyshop.com>"
+ *   RESEND_FROM          — verified sender, e.g. "WALL BUY <hello@wallbuy.shop>"
  *                          (falls back to Resend's test sender)
  *   RESEND_AUDIENCE_ID   — optional; newsletter signups are added to this
  *                          audience. Without it, a signup notification is
